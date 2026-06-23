@@ -17,10 +17,7 @@
             background-color: #1f2937;
             border-color: #374151;
         }
-        body.dark .text-muted-custom {
-            color: #9ca3af;
-        }
-        body.dark input, body.dark select, body.dark text-area {
+        body.dark input, body.dark select, body.dark textarea {
             background-color: #374151;
             color: #f9fafb;
             border-color: #4b5563;
@@ -29,17 +26,39 @@
             background-color: #1f2937 !important;
             border-color: #374151 !important;
         }
+        body.dark .bg-gray-50 {
+            background-color: #111827 !important;
+        }
+        body.dark th {
+            background-color: #374151 !important;
+            color: #f9fafb !important;
+        }
+        body.dark tr:hover {
+            background-color: #2d3748 !important;
+        }
+        
+        /* Configurações de Impressão / PDF */
         @media print {
+            .print\:hidden {
+                display: none !important;
+            }
             body {
                 background-color: #ffffff !important;
                 color: #000000 !important;
+            }
+            .bg-white {
+                background-color: #ffffff !important;
+                border-color: #e5e7eb !important;
+            }
+            .text-red-600 {
+                color: #b91c1c !important;
             }
         }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-800 font-sans transition-theme">
-    <div class="print:hidden flex flex-col min-h-screen">
-        <header class="bg-red-700 text-white shadow-md transition-theme">
+    <div class="flex flex-col min-h-screen">
+        <header class="print:hidden bg-red-700 text-white shadow-md transition-theme">
             <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div class="flex items-center gap-4">
                     <svg viewBox="0 0 100 100" class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +71,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button id="btn-theme-toggle" class="flex items-center justify-center p-2.5 rounded-lg bg-red-800 hover:bg-red-900 text-white border border-red-600 transition-colors">
+                    <button id="btn-theme-toggle" class="flex items-center justify-center p-2.5 rounded-lg bg-red-800 hover:bg-red-900 text-white border border-red-600 transition-colors" title="Alternar Tema">
                         <span id="icon-theme-container"></span>
                     </button>
                     <button id="btn-reset-trigger" class="bg-red-800 hover:bg-red-900 text-white text-sm font-semibold px-5 py-2.5 rounded-lg border border-red-600 transition-colors">Repor Dados</button>
@@ -60,7 +79,7 @@
             </div>
         </header>
 
-        <nav class="bg-white border-b border-gray-200 shadow">
+        <nav class="print:hidden bg-white border-b border-gray-200 shadow">
             <div class="max-w-6xl mx-auto px-4 flex flex-wrap gap-2 py-3">
                 <button id="tab-btn-dashboard" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-md font-medium bg-red-100 text-red-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg> Dashboard
@@ -75,43 +94,54 @@
         </nav>
 
         <main class="max-w-6xl mx-auto w-full px-4 py-8 flex-grow">
+            
+            <div class="hidden print:block text-center mb-6 border-b pb-4">
+                <h1 class="text-3xl font-bold uppercase tracking-wide text-gray-900">Relatório Geral de Despesas</h1>
+                <p class="text-gray-600">Regional Ampére — Gerado em de 2026</p>
+            </div>
+
             <section id="content-dashboard" class="tab-content space-y-6">
                 <div class="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-gray-100">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+                        <div class="print:hidden p-2 bg-red-50 text-red-600 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
                         <div>
                             <h3 class="font-bold text-sm sm:text-base">Período de Visualização</h3>
-                            <p class="text-xs text-gray-600">Exibindo dados de: <strong id="lbl-active-month" class="text-red-600">Todos os Meses</strong></p>
+                            <p class="text-xs text-gray-600 dark:text-gray-400">Exibindo dados de: <strong id="lbl-active-month" class="text-red-600">Todos os Meses</strong></p>
                         </div>
                     </div>
-                    <select id="select-month-filter" class="w-full sm:w-64 border border-gray-300 rounded-lg p-2.5 outline-none bg-white font-medium">
-                        <option value="all">Todos os Meses</option>
-                    </select>
+                    <div class="flex w-full sm:w-auto gap-2 print:hidden">
+                        <select id="select-month-filter" class="w-full sm:w-64 border border-gray-300 rounded-lg p-2.5 outline-none bg-white font-medium">
+                            <option value="all">Todos os Meses</option>
+                        </select>
+                        <button id="btn-export-pdf" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> Exportar PDF
+                        </button>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-600">
-                        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Despesa Total</h3>
-                        <p id="kpi-total" class="text-2xl font-bold mt-2">R$ 0,00</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border-t-4 border-red-600">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">Despesa Total</h3>
+                        <p id="kpi-total" class="text-xl md:text-2xl font-bold mt-2">R$ 0,00</p>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-500">
-                        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Média por Almoço</h3>
-                        <p id="kpi-media" class="text-2xl font-bold mt-2">R$ 0,00</p>
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border-t-4 border-red-500">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">Média por Almoço</h3>
+                        <p id="kpi-media" class="text-xl md:text-2xl font-bold mt-2">R$ 0,00</p>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-amber-500">
-                        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Danos e Outros</h3>
-                        <p id="kpi-danos" class="text-2xl font-bold mt-2">R$ 0,00</p>
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border-t-4 border-amber-500">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">Danos e Outros</h3>
+                        <p id="kpi-danos" class="text-xl md:text-2xl font-bold mt-2">R$ 0,00</p>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-400">
-                        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Lançamentos</h3>
-                        <p id="kpi-count" class="text-2xl font-bold mt-2">0</p>
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border-t-4 border-red-400">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">Lançamentos</h3>
+                        <p id="kpi-count" class="text-xl md:text-2xl font-bold mt-2">0</p>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl shadow-sm p-6 border">
-                    <h2 class="text-xl font-bold mb-4">Últimas Despesas</h2>
+                    <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Detalhamento das Despesas</h2>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-sm">
                             <thead>
@@ -121,7 +151,7 @@
                                     <th class="p-3 font-medium">Cidade</th>
                                     <th class="p-3 font-medium">Tipo</th>
                                     <th class="p-3 font-medium">Valor</th>
-                                    <th class="p-3 font-medium">Ações</th>
+                                    <th class="p-3 font-medium print:hidden">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="table-recent-expenses-body">
@@ -164,26 +194,45 @@
                 </form>
             </section>
 
-            <section id="content-team" class="tab-content max-w-2xl mx-auto bg-white rounded-xl shadow-sm p-6 border hidden">
-                <h2 class="text-2xl font-bold mb-4">Lista de Cidades e Técnicos</h2>
-                <p class="text-sm text-gray-500 mb-6">Visualização dos profissionais vinculados por região geográfica.</p>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead>
-                            <tr class="text-xs uppercase border-b bg-gray-50">
-                                <th class="p-3 font-medium">ID</th>
-                                <th class="p-3 font-medium">Nome do Técnico</th>
-                                <th class="p-3 font-medium">Cidade de Atuação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-team-body">
-                            </tbody>
-                    </table>
+            <section id="content-team" class="tab-content max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 hidden">
+                <div class="bg-white rounded-xl shadow-sm p-6 border h-fit">
+                    <h3 class="text-lg font-bold mb-4">Adicionar Novo Técnico</h3>
+                    <form id="form-new-tech" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nome do Profissional</label>
+                            <input type="text" id="inp-tech-name" class="w-full border rounded-lg p-2.5 outline-none" placeholder="Ex: João Silva" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Cidade Base de Atuação</label>
+                            <select id="inp-tech-city" class="w-full border rounded-lg p-2.5 outline-none bg-white" required></select>
+                        </div>
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-4 rounded-lg transition-colors text-sm">
+                            Cadastrar Técnico
+                        </button>
+                    </form>
+                </div>
+
+                <div class="md:col-span-2 bg-white rounded-xl shadow-sm p-6 border">
+                    <h2 class="text-2xl font-bold mb-2">Profissionais e Regiões</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Visualização da equipe técnica distribuída por município.</p>
+                    <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead class="sticky top-0 bg-white">
+                                <tr class="text-xs uppercase border-b bg-gray-50">
+                                    <th class="p-3 font-medium">ID</th>
+                                    <th class="p-3 font-medium">Nome do Técnico</th>
+                                    <th class="p-3 font-medium">Cidade de Atuação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-team-body">
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </main>
 
-        <footer class="bg-white border-t border-gray-200 py-6 text-center text-xs text-gray-500 mt-auto">
+        <footer class="print:hidden bg-white border-t border-gray-200 py-6 text-center text-xs text-gray-500 mt-auto">
             <p>© 2026 - Controle de Despesas Regional Ampére</p>
         </footer>
     </div>
@@ -211,9 +260,9 @@
             newExpenseType: 'lunch'
         };
 
-        // Ícones SVG do Sol e da Lua
-        const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.344l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"/></svg>`;
-        const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
+        // Ícones SVG corretos (Lua para Tema Claro -> Mudar para Escuro / Sol para Tema Escuro -> Mudar para Claro)
+        const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75zM6.16 4.56a.75.75 0 0 1 1.06 0l1.59 1.59a.75.75 0 1 1-1.06 1.06L6.16 5.62a.75.75 0 0 1 0-1.06zm11.68 0a.75.75 0 0 1 0 1.06l-1.59 1.59a.75.75 0 1 1-1.06-1.06l1.59-1.59a.75.75 0 0 1 1.06 0zM3 12a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12zm15 0a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 0 1.5h-2.25A.75.75 0 0 1 18 12zM6.16 19.44a.75.75 0 0 1 0-1.06l1.59-1.59a.75.75 0 1 1 1.06 1.06l-1.59 1.59a.75.75 0 0 1-1.06 0zm11.68 0a.75.75 0 0 1-1.06 0l-1.59-1.59a.75.75 0 1 1 1.06-1.06l1.59 1.59a.75.75 0 0 1 0 1.06zM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18zM12 7.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z"/></svg>`;
+        const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-200" fill="currentColor" viewBox="0 0 24 24"><path d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 1 1-16.915-11.97.75.75 0 0 1 .818-.162z"/></svg>`;
 
         const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
         
@@ -243,10 +292,10 @@
             const container = document.getElementById('icon-theme-container');
             if (theme === 'dark') {
                 document.body.classList.add('dark');
-                container.innerHTML = sunIcon; // Mostra Sol no escuro para alternar para o claro
+                container.innerHTML = sunIcon; // Mostra o Sol no escuro para voltar ao claro
             } else {
                 document.body.classList.remove('dark');
-                container.innerHTML = moonIcon; // Mostra Lua no claro para alternar para o escuro
+                container.innerHTML = moonIcon; // Mostra a Lua no claro para ir para o escuro
             }
             localStorage.setItem('expenseTheme', theme);
         };
@@ -274,10 +323,10 @@
         const renderTeamTable = () => {
             const body = document.getElementById('table-team-body');
             body.innerHTML = state.techs.map(t => `
-                <tr class="border-b hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr class="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <td class="p-3 text-gray-500">${t.id}</td>
-                    <td class="p-3 font-semibold">${t.name}</td>
-                    <td class="p-3"><span class="px-2 py-1 bg-red-50 text-red-700 rounded-full text-xs font-bold">${t.city}</span></td>
+                    <td class="p-3 font-semibold text-gray-900 dark:text-gray-100">${t.name}</td>
+                    <td class="p-3"><span class="px-2 py-1 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-bold">${t.city}</span></td>
                 </tr>
             `).join('');
         };
@@ -301,20 +350,22 @@
                 tableBody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400">Nenhuma despesa registrada</td></tr>';
             } else {
                 tableBody.innerHTML = filtered.map(exp => `
-                    <tr class="border-b">
+                    <tr class="border-b hover:bg-gray-50">
                         <td class="p-3">${formatDate(exp.date)}</td>
-                        <td class="p-3">${exp.techName}</td>
+                        <td class="p-3 font-medium">${exp.techName}</td>
                         <td class="p-3">${exp.cityName}</td>
                         <td class="p-3">${exp.type === 'lunch' ? 'Almoço' : 'Outros'}</td>
                         <td class="p-3 font-bold text-red-600">${formatCurrency(exp.amount)}</td>
-                        <td class="p-3"><button onclick="deleteExpense('${exp.id}')" class="text-red-600 hover:underline">Deletar</button></td>
+                        <td class="p-3 print:hidden"><button onclick="deleteExpense('${exp.id}')" class="text-red-600 hover:underline">Deletar</button></td>
                     </tr>
                 `).join('');
             }
         };
 
         const updateDropdowns = () => {
-            document.getElementById('inp-expense-city').innerHTML = '<option value="">Selecione a cidade...</option>' + CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+            const cityOptions = '<option value="">Selecione a cidade...</option>' + CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('inp-expense-city').innerHTML = cityOptions;
+            document.getElementById('inp-tech-city').innerHTML = cityOptions;
         };
 
         window.deleteExpense = (id) => {
@@ -333,7 +384,29 @@
             setTheme(state.theme === 'light' ? 'dark' : 'light');
         });
 
-        // Eventos do Formulário
+        // Evento de Exportação para PDF (Impressão de Sistema Otimizada)
+        document.getElementById('btn-export-pdf').addEventListener('click', () => {
+            window.print();
+        });
+
+        // Eventos do Formulário de Cadastro de Técnico
+        document.getElementById('form-new-tech').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('inp-tech-name').value.trim();
+            const city = document.getElementById('inp-tech-city').value;
+
+            if (!name || !city) return;
+
+            const newId = (state.techs.length + 1).toString();
+            state.techs.push({ id: newId, name, city });
+            
+            saveState();
+            renderTeamTable();
+            document.getElementById('form-new-tech').reset();
+            alert(`Técnico ${name} cadastrado com sucesso para a região de ${city}!`);
+        });
+
+        // Eventos do Formulário de Despesas
         document.getElementById('btn-type-lunch').addEventListener('click', (e) => {
             e.preventDefault();
             state.newExpenseType = 'lunch';

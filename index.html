@@ -1,345 +1,346 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controlo de Despesas Regional Ampére</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .transition-theme {
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-    }
-    body.dark {
-      background-color: #111827;
-      color: #f9fafb;
-    }
-    body.dark .bg-card-custom {
-      background-color: #1f2937;
-      border-color: #374151;
-    }
-    body.dark .text-muted-custom {
-      color: #9ca3af;
-    }
-    body.dark input, body.dark select {
-      background-color: #374151;
-      color: #f9fafb;
-      border-color: #4b5563;
-    }
-    @media print {
-      body {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controlo de Despesas Regional Ampére</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .transition-theme {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+        body.dark {
+            background-color: #111827;
+            color: #f9fafb;
+        }
+        body.dark .bg-card-custom {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+        body.dark .text-muted-custom {
+            color: #9ca3af;
+        }
+        body.dark input, body.dark select {
+            background-color: #374151;
+            color: #f9fafb;
+            border-color: #4b5563;
+        }
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-800 font-sans transition-theme">
-  <div class="print:hidden flex flex-col min-h-screen">
-    <header class="bg-red-700 text-white shadow-md transition-theme">
-      <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="flex items-center gap-4">
-          <svg viewBox="0 0 100 100" class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="36" stroke="white" stroke-width="6.5" fill="none" />
-            <path d="M 31 82 Q 41 57 50 28 Q 59 57 69 82 Q 67 85 63 80 Q 55 53 50 41 Q 45 53 37 80 Q 33 85 31 82 Z" fill="white" />
-          </svg>
-          <div>
-            <h1 class="text-2xl md:text-3xl font-bold uppercase tracking-wide">Controlo de Despesas Regional Ampére</h1>
-            <p class="text-red-200 mt-1">Gestão de almoços e despesas da equipa técnica</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <button id="btn-theme-toggle" class="flex items-center justify-center p-2.5 rounded-lg bg-red-800 hover:bg-red-900 text-white border border-red-600 transition-colors">
-            <svg id="icon-theme" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-          </button>
-          <button id="btn-reset-trigger" class="bg-red-800 hover:bg-red-900 text-white text-sm font-semibold px-5 py-2.5 rounded-lg border border-red-600 transition-colors">Repor Dados</button>
-        </div>
-      </div>
-    </header>
+    <div class="print:hidden flex flex-col min-h-screen">
+        <header class="bg-red-700 text-white shadow-md transition-theme">
+            <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <svg viewBox="0 0 100 100" class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="36" stroke="white" stroke-width="6.5" fill="none" />
+                        <path d="M 31 82 Q 41 57 50 28 Q 59 57 69 82 Q 67 85 63 80 Q 55 53 50 41 Q 45 53 37 80 Q 33 85 31 82 Z" fill="white" />
+                    </svg>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold uppercase tracking-wide">Controle de Despesas Regional Ampére</h1>
+                        <p class="text-red-200 mt-1">Gestão de almoços e despesas da equipa técnica</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-theme-toggle" class="flex items-center justify-center p-2.5 rounded-lg bg-red-800 hover:bg-red-900 text-white border border-red-600 transition-colors">
+                        <svg id="icon-theme" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </button>
+                    <button id="btn-reset-trigger" class="bg-red-800 hover:bg-red-900 text-white text-sm font-semibold px-5 py-2.5 rounded-lg border border-red-600 transition-colors">Repor Dados</button>
+                </div>
+            </div>
+        </header>
 
-    <nav class="bg-white border-b border-gray-200 shadow">
-      <div class="max-w-6xl mx-auto px-4 flex flex-wrap gap-2 py-3">
-        <button id="tab-btn-dashboard" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium bg-red-100 text-red-700 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg>
-          Dashboard
-        </button>
-        <button id="tab-btn-add" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-          Registar Despesa
-        </button>
-        <button id="tab-btn-team" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-          Cidades e Técnicos
-        </button>
-      </div>
-    </nav>
+        <nav class="bg-white border-b border-gray-200 shadow">
+            <div class="max-w-6xl mx-auto px-4 flex flex-wrap gap-2 py-3">
+                <button id="tab-btn-dashboard" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium bg-red-100 text-red-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg> Dashboard
+                </button>
+                <button id="tab-btn-add" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Registar Despesa
+                </button>
+                <button id="tab-btn-team" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Cidades e Técnicos
+                </button>
+            </div>
+        </nav>
 
-    <div id="toast-container" class="max-w-6xl mx-auto w-full px-4 mt-4 hidden">
-      <div id="toast-body" class="p-4 rounded-md flex items-center gap-3">
-        <span id="toast-icon"></span>
-        <span id="toast-text" class="font-medium"></span>
-      </div>
+        <div id="toast-container" class="max-w-6xl mx-auto w-full px-4 mt-4 hidden">
+            <div id="toast-body" class="p-4 rounded-md flex items-center gap-3">
+                <span id="toast-icon"></span>
+                <span id="toast-text" class="font-medium"></span>
+            </div>
+        </div>
+
+        <main class="max-w-6xl mx-auto w-full px-4 py-8 flex-grow">
+            <section id="content-dashboard" class="space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-red-50 text-red-600 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm sm:text-base">Período de Visualização</h3>
+                            <p class="text-xs text-gray-600">Exibindo dados de: <strong id="lbl-active-month" class="text-red-600">Todos os Meses</strong></p>
+                        </div>
+                    </div>
+                    <select id="select-month-filter" class="w-full sm:w-64 border border-gray-300 rounded-lg p-2.5 outline-none bg-white font-medium">
+                        <option value="all">Todos os Meses</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-600">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Despesa Total</h3>
+                        <p id="kpi-total" class="text-2xl font-bold mt-2">R$ 0,00</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-500">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Média por Almoço</h3>
+                        <p id="kpi-media" class="text-2xl font-bold mt-2">R$ 0,00</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-amber-500">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Danos e Outros</h3>
+                        <p id="kpi-danos" class="text-2xl font-bold mt-2">R$ 0,00</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-400">
+                        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Lançamentos</h3>
+                        <p id="kpi-count" class="text-2xl font-bold mt-2">0</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 border">
+                    <h2 class="text-xl font-bold mb-4">Últimas Despesas</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="text-xs uppercase border-b bg-gray-50">
+                                    <th class="p-3 font-medium">Data</th>
+                                    <th class="p-3 font-medium">Técnico</th>
+                                    <th class="p-3 font-medium">Cidade</th>
+                                    <th class="p-3 font-medium">Tipo</th>
+                                    <th class="p-3 font-medium">Valor</th>
+                                    <th class="p-3 font-medium">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-recent-expenses-body">
+                                <tr><td colspan="6" class="p-6 text-center text-gray-400">Nenhuma despesa registada</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="content-add" class="max-w-xl mx-auto bg-white rounded-xl shadow-sm p-6 border hidden">
+                <h2 class="text-2xl font-bold mb-6">Registar Despesa</h2>
+                <form id="form-new-expense" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Tipo de Despesa</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button type="button" id="btn-type-lunch" class="py-3 px-4 rounded-lg font-semibold text-sm bg-red-600 text-white">Almoço</button>
+                            <button type="button" id="btn-type-damage" class="py-3 px-4 rounded-lg font-semibold text-sm bg-white text-gray-700 border">Danos e Outros</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Cidade</label>
+                        <select id="inp-expense-city" class="w-full border rounded-lg p-3 outline-none bg-white" required></select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Técnico</label>
+                        <select id="inp-expense-tech" class="w-full border rounded-lg p-3 outline-none bg-white" disabled required></select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Data</label>
+                            <input type="date" id="inp-expense-date" class="w-full border rounded-lg p-3 outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Valor (R$)</label>
+                            <input type="number" step="0.01" min="0" id="inp-expense-amount" class="w-full border rounded-lg p-3 outline-none" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg">Salvar Despesa</button>
+                </form>
+            </section>
+        </main>
+
+        <footer class="bg-white border-t border-gray-200 py-6 text-center text-xs text-gray-500 mt-auto">
+            <p>© 2026 - Controle de Despesas Regional Ampére</p>
+        </footer>
     </div>
 
-    <main class="max-w-6xl mx-auto w-full px-4 py-8 flex-grow">
-      <section id="content-dashboard" class="space-y-6">
-        <div class="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-gray-100">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-red-50 text-red-600 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            </div>
-            <div>
-              <h3 class="font-bold text-sm sm:text-base">Período de Visualização</h3>
-              <p class="text-xs text-gray-600">Exibindo dados de: <strong id="lbl-active-month" class="text-red-600">Todos os Meses</strong></p>
-            </div>
-          </div>
-          <select id="select-month-filter" class="w-full sm:w-64 border border-gray-300 rounded-lg p-2.5 outline-none bg-white font-medium">
-            <option value="all">Todos os Meses</option>
-          </select>
-        </div>
+    <script>
+        const CITIES = ['Ampére', 'Capanema', 'Capitão', 'Dois Vizinhos', 'Realeza'];
+        const INITIAL_TECHS = [
+            { id: '1', name: 'Ederson', city: 'Ampére' },
+            { id: '2', name: 'Diego', city: 'Ampére' },
+            { id: '3', name: 'Marcos', city: 'Ampére' },
+            { id: '4', name: 'Valdenor', city: 'Ampére' },
+            { id: '5', name: 'Wellinton', city: 'Ampére' },
+            { id: '6', name: 'Mateus', city: 'Ampére' },
+            { id: '7', name: 'Guilherme', city: 'Ampére' },
+            { id: '8', name: 'Vinicios', city: 'Capanema' },
+            { id: '9', name: 'Odair', city: 'Capanema' },
+            { id: '10', name: 'Rodrigo', city: 'Capitão' },
+            { id: '11', name: 'Renan', city: 'Capitão' },
+            { id: '12', name: 'Marcio', city: 'Dois Vizinhos' },
+            { id: '13', name: 'Samuel', city: 'Dois Vizinhos' },
+            { id: '14', name: 'Edson', city: 'Dois Vizinhos' },
+            { id: '15', name: 'Cleverson', city: 'Dois Vizinhos' },
+            { id: '16', name: 'Renan', city: 'Dois Vizinhos' },
+            { id: '17', name: 'Alessandro', city: 'Realeza' },
+            { id: '18', name: 'Kauan', city: 'Realeza' },
+            { id: '19', name: 'Serginho', city: 'Realeza' },
+            { id: '20', name: 'Tiago', city: 'Realeza' }
+        ];
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-600">
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Despesa Total</h3>
-            <p id="kpi-total" class="text-2xl font-bold mt-2">R$ 0,00</p>
-          </div>
-          <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-500">
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Média por Almoço</h3>
-            <p id="kpi-media" class="text-2xl font-bold mt-2">R$ 0,00</p>
-          </div>
-          <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-amber-500">
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Danos e Outros</h3>
-            <p id="kpi-danos" class="text-2xl font-bold mt-2">R$ 0,00</p>
-          </div>
-          <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-400">
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-600">Lançamentos</h3>
-            <p id="kpi-count" class="text-2xl font-bold mt-2">0</p>
-          </div>
-        </div>
+        let state = {
+            techs: [...INITIAL_TECHS],
+            expenses: [],
+            activeTab: 'dashboard',
+            selectedMonth: 'all',
+            theme: 'light',
+            newExpenseType: 'lunch'
+        };
 
-        <div class="bg-white rounded-xl shadow-sm p-6 border">
-          <h2 class="text-xl font-bold mb-4">Últimas Despesas</h2>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-sm">
-              <thead>
-                <tr class="text-xs uppercase border-b bg-gray-50">
-                  <th class="p-3 font-medium">Data</th>
-                  <th class="p-3 font-medium">Técnico</th>
-                  <th class="p-3 font-medium">Cidade</th>
-                  <th class="p-3 font-medium">Tipo</th>
-                  <th class="p-3 font-medium">Valor</th>
-                  <th class="p-3 font-medium">Ações</th>
-                </tr>
-              </thead>
-              <tbody id="table-recent-expenses-body">
-                <tr><td colspan="6" class="p-6 text-center text-gray-400">Nenhuma despesa registada</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
+        const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        
+        const formatDate = (dateString) => {
+            if (!dateString) return '';
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        };
 
-      <section id="content-add" class="max-w-xl mx-auto bg-white rounded-xl shadow-sm p-6 border hidden">
-        <h2 class="text-2xl font-bold mb-6">Registar Despesa</h2>
-        <form id="form-new-expense" class="space-y-5">
-          <div>
-            <label class="block text-sm font-medium mb-2">Tipo de Despesa</label>
-            <div class="grid grid-cols-2 gap-4">
-              <button type="button" id="btn-type-lunch" class="py-3 px-4 rounded-lg font-semibold text-sm bg-red-600 text-white">Almoço</button>
-              <button type="button" id="btn-type-damage" class="py-3 px-4 rounded-lg font-semibold text-sm bg-white text-gray-700 border">Danos e Outros</button>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Cidade</label>
-            <select id="inp-expense-city" class="w-full border rounded-lg p-3 outline-none bg-white" required></select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Técnico</label>
-            <select id="inp-expense-tech" class="w-full border rounded-lg p-3 outline-none bg-white" disabled required></select>
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Data</label>
-              <input type="date" id="inp-expense-date" class="w-full border rounded-lg p-3 outline-none" required>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Valor (R$)</label>
-              <input type="number" step="0.01" min="0" id="inp-expense-amount" class="w-full border rounded-lg p-3 outline-none" required>
-            </div>
-          </div>
-          <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg">Salvar Despesa</button>
-        </form>
-      </section>
-    </main>
+        const loadState = () => {
+            const saved = localStorage.getItem('expenseSystemState');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state.expenses = parsed.expenses || [];
+                state.techs = parsed.techs || [...INITIAL_TECHS];
+            }
+        };
 
-    <footer class="bg-white border-t border-gray-200 py-6 text-center text-xs text-gray-500 mt-auto">
-      <p>© 2026 - Controlo de Despesas Regional Ampére</p>
-    </footer>
-  </div>
+        const saveState = () => {
+            localStorage.setItem('expenseSystemState', JSON.stringify({ expenses: state.expenses, techs: state.techs }));
+        };
 
-  <script>
-    const CITIES = ['Ampére', 'Capanema', 'Capitão', 'Dois Vizinhos', 'Realeza'];
-    const INITIAL_TECHS = [
-      { id: '1', name: 'Ederson', city: 'Ampére' },
-      { id: '2', name: 'Diego', city: 'Ampére' },
-      { id: '3', name: 'Marcos', city: 'Ampére' },
-      { id: '4', name: 'Valdenor', city: 'Ampére' },
-      { id: '5', name: 'Wellinton', city: 'Ampére' },
-      { id: '6', name: 'Mateus', city: 'Ampére' },
-      { id: '7', name: 'Guilherme', city: 'Ampére' },
-      { id: '8', name: 'Vinicios', city: 'Capanema' },
-      { id: '9', name: 'Odair', city: 'Capanema' },
-      { id: '10', name: 'Rodrigo', city: 'Capitão' },
-      { id: '11', name: 'Renan', city: 'Capitão' },
-      { id: '12', name: 'Marcio', city: 'Dois Vizinhos' },
-      { id: '13', name: 'Samuel', city: 'Dois Vizinhos' },
-      { id: '14', name: 'Edson', city: 'Dois Vizinhos' },
-      { id: '15', name: 'Cleverson', city: 'Dois Vizinhos' },
-      { id: '16', name: 'Renan', city: 'Dois Vizinhos' },
-      { id: '17', name: 'Alessandro', city: 'Realeza' },
-      { id: '18', name: 'Kauan', city: 'Realeza' },
-      { id: '19', name: 'Serginho', city: 'Realeza' },
-      { id: '20', name: 'Tiago', city: 'Realeza' },
-    ];
+        const updateUI = () => {
+            const filtered = state.selectedMonth === 'all' ? state.expenses : state.expenses.filter(e => e.date && e.date.startsWith(state.selectedMonth));
+            const totalExpense = filtered.reduce((acc, curr) => acc + curr.amount, 0);
+            
+            document.getElementById('kpi-total').innerText = formatCurrency(totalExpense);
+            document.getElementById('kpi-count').innerText = filtered.length;
+            
+            const tableBody = document.getElementById('table-recent-expenses-body');
+            
+            if (filtered.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400">Nenhuma despesa registada</td></tr>';
+            } else {
+                tableBody.innerHTML = filtered.map(exp => `
+                    <tr class="border-b">
+                        <td class="p-3">${formatDate(exp.date)}</td>
+                        <td class="p-3">${exp.techName}</td>
+                        <td class="p-3">${exp.cityName}</td>
+                        <td class="p-3">${exp.type === 'lunch' ? 'Almoço' : 'Outros'}</td>
+                        <td class="p-3 font-bold text-red-600">${formatCurrency(exp.amount)}</td>
+                        <td class="p-3"><button onclick="deleteExpense('${exp.id}')" class="text-red-600">Deletar</button></td>
+                    </tr>
+                `).join('');
+            }
+        };
 
-    let state = {
-      techs: [...INITIAL_TECHS],
-      expenses: [],
-      activeTab: 'dashboard',
-      selectedMonth: 'all',
-      theme: 'light',
-      newExpenseType: 'lunch'
-    };
+        const updateDropdowns = () => {
+            document.getElementById('inp-expense-city').innerHTML = '<option value="">Selecione a cidade...</option>' + CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+        };
 
-    const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-    const formatDate = (dateString) => {
-      if (!dateString) return '';
-      const [year, month, day] = dateString.split('-');
-      return `${day}/${month}/${year}`;
-    };
+        window.deleteExpense = (id) => {
+            state.expenses = state.expenses.filter(e => e.id !== id);
+            saveState();
+            updateUI();
+        };
 
-    const loadState = () => {
-      const saved = localStorage.getItem('expenseSystemState');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        state.expenses = parsed.expenses || [];
-        state.techs = parsed.techs || [...INITIAL_TECHS];
-      }
-    };
+        document.getElementById('btn-type-lunch').addEventListener('click', (e) => {
+            e.preventDefault();
+            state.newExpenseType = 'lunch';
+            document.getElementById('btn-type-lunch').className = 'py-3 px-4 rounded-lg font-semibold text-sm bg-red-600 text-white';
+            document.getElementById('btn-type-damage').className = 'py-3 px-4 rounded-lg font-semibold text-sm bg-white text-gray-700 border';
+        });
 
-    const saveState = () => {
-      localStorage.setItem('expenseSystemState', JSON.stringify({
-        expenses: state.expenses,
-        techs: state.techs
-      }));
-    };
+        document.getElementById('btn-type-damage').addEventListener('click', (e) => {
+            e.preventDefault();
+            state.newExpenseType = 'damage_others';
+            document.getElementById('btn-type-lunch').className = 'py-3 px-4 rounded-lg font-semibold text-sm bg-white text-gray-700 border';
+            document.getElementById('btn-type-damage').className = 'py-3 px-4 rounded-lg font-semibold text-sm bg-amber-600 text-white';
+        });
 
-    const updateUI = () => {
-      const filtered = state.selectedMonth === 'all' ? state.expenses : state.expenses.filter(e => e.date && e.date.startsWith(state.selectedMonth));
-      const totalExpense = filtered.reduce((acc, curr) => acc + curr.amount, 0);
-      
-      document.getElementById('kpi-total').innerText = formatCurrency(totalExpense);
-      document.getElementById('kpi-count').innerText = filtered.length;
+        document.getElementById('inp-expense-city').addEventListener('change', (e) => {
+            const city = e.target.value;
+            const selectTech = document.getElementById('inp-expense-tech');
+            if (!city) {
+                selectTech.innerHTML = '<option value="">Selecione o técnico...</option>';
+                selectTech.disabled = true;
+            } else {
+                const techs = state.techs.filter(t => t.city === city);
+                selectTech.innerHTML = '<option value="">Selecione o técnico...</option>' + techs.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+                selectTech.disabled = false;
+            }
+        });
 
-      const tableBody = document.getElementById('table-recent-expenses-body');
-      if (filtered.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400">Nenhuma despesa registada</td></tr>';
-      } else {
-        tableBody.innerHTML = filtered.map(exp => `
-          <tr class="border-b">
-            <td class="p-3">${formatDate(exp.date)}</td>
-            <td class="p-3">${exp.techName}</td>
-            <td class="p-3">${exp.cityName}</td>
-            <td class="p-3">${exp.type === 'lunch' ? 'Almoço' : 'Outros'}</td>
-            <td class="p-3 font-bold text-red-600">${formatCurrency(exp.amount)}</td>
-            <td class="p-3"><button onclick="deleteExpense('${exp.id}')" class="text-red-600">Deletar</button></td>
-          </tr>
-        `).join('');
-      }
-    };
+        document.getElementById('form-new-expense').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const date = document.getElementById('inp-expense-date').value;
+            const city = document.getElementById('inp-expense-city').value;
+            const techId = document.getElementById('inp-expense-tech').value;
+            const amount = parseFloat(document.getElementById('inp-expense-amount').value);
+            
+            if (!date || !city || !techId || !amount) return;
+            
+            const tech = state.techs.find(t => t.id === techId);
+            const expense = {
+                id: Date.now().toString(),
+                date,
+                cityName: city,
+                techId,
+                techName: tech.name,
+                type: state.newExpenseType,
+                amount
+            };
+            
+            state.expenses.push(expense);
+            saveState();
+            document.getElementById('form-new-expense').reset();
+            updateUI();
+        }); // <-- Corrigido: Fechamento correto da função e evento
 
-    const updateDropdowns = () => {
-      document.getElementById('inp-expense-city').innerHTML = '<option value="">Selecione a cidade...</option>' + CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
-    };
+        document.getElementById('tab-btn-dashboard').addEventListener('click', () => {
+            document.getElementById('content-dashboard').classList.remove('hidden');
+            document.getElementById('content-add').classList.add('hidden');
+        });
 
-    window.deleteExpense = (id) => {
-      state.expenses = state.expenses.filter(e => e.id !== id);
-      saveState();
-      updateUI();
-    };
+        document.getElementById('tab-btn-add').addEventListener('click', () => {
+            document.getElementById('content-dashboard').classList.add('hidden');
+            document.getElementById('content-add').classList.remove('hidden');
+        });
 
-    document.getElementById('btn-type-lunch').addEventListener('click', (e) => {
-      e.preventDefault();
-      state.newExpenseType = 'lunch';
-      document.getElementById('btn-type-lunch').className = 'py-3 px-4 rounded-lg font-semibold text-sm bg-red-600 text-white';
-      document.getElementById('btn-type-damage').className = 'py-3 px-4 rounded-lg font-semibold text-sm bg-white text-gray-700 border';
-    });
+        document.getElementById('btn-reset-trigger').addEventListener('click', () => {
+            if (confirm('Deseja limpar todos os dados?')) {
+                state.expenses = [];
+                state.techs = [...INITIAL_TECHS];
+                saveState();
+                updateUI();
+            }
+        });
 
-    document.getElementById('btn-type-damage').addEventListener('click', (e) => {
-      e.preventDefault();
-      state.newExpenseType = 'damage_others';
-      document.getElementById('btn-type-lunch').className = 'py-3 px-4 rounded-lg font-semibold text-sm bg-white text-gray-700 border';
-      document.getElementById('btn-type-damage').className = 'py-3 px-4 rounded-lg font-semibold text-sm bg-amber-600 text-white';
-    });
-
-    document.getElementById('inp-expense-city').addEventListener('change', (e) => {
-      const city = e.target.value;
-      const selectTech = document.getElementById('inp-expense-tech');
-      if (!city) {
-        selectTech.innerHTML = '<option value="">Selecione o técnico...</option>';
-        selectTech.disabled = true;
-      } else {
-        const techs = state.techs.filter(t => t.city === city);
-        selectTech.innerHTML = '<option value="">Selecione o técnico...</option>' + techs.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-        selectTech.disabled = false;
-      }
-    });
-
-    document.getElementById('form-new-expense').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const date = document.getElementById('inp-expense-date').value;
-      const city = document.getElementById('inp-expense-city').value;
-      const techId = document.getElementById('inp-expense-tech').value;
-      const amount = parseFloat(document.getElementById('inp-expense-amount').value);
-
-      if (!date || !city || !techId || !amount) return;
-
-      const tech = state.techs.find(t => t.id === techId);
-      const expense = {
-        id: Date.now().toString(),
-        date, cityName: city, techId, techName: tech.name,
-        type: state.newExpenseType, amount
-      };
-
-      state.expenses.push(expense);
-      saveState();
-      document.getElementById('form-new-expense').reset();
-      updateUI();
-    };
-
-    document.getElementById('tab-btn-dashboard').addEventListener('click', () => {
-      document.getElementById('content-dashboard').classList.remove('hidden');
-      document.getElementById('content-add').classList.add('hidden');
-    });
-
-    document.getElementById('tab-btn-add').addEventListener('click', () => {
-      document.getElementById('content-dashboard').classList.add('hidden');
-      document.getElementById('content-add').classList.remove('hidden');
-    });
-
-    document.getElementById('btn-reset-trigger').addEventListener('click', () => {
-      if (confirm('Deseja limpar todos os dados?')) {
-        state.expenses = [];
-        state.techs = [...INITIAL_TECHS];
-        saveState();
+        loadState();
+        updateDropdowns();
         updateUI();
-      }
-    });
-
-    loadState();
-    updateDropdowns();
-    updateUI();
-    <script src="JS/script.js"></script> 
+    </script>
+    <script src="JS/script.js"></script>
 </body>
 </html>

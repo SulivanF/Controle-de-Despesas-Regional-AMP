@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controlo de Despesas Regional Ampére</title>
+    <title>Controle de Despesas Regional Ampére</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .transition-theme {
@@ -20,10 +20,14 @@
         body.dark .text-muted-custom {
             color: #9ca3af;
         }
-        body.dark input, body.dark select {
+        body.dark input, body.dark select, body.dark text-area {
             background-color: #374151;
             color: #f9fafb;
             border-color: #4b5563;
+        }
+        body.dark .bg-white {
+            background-color: #1f2937 !important;
+            border-color: #374151 !important;
         }
         @media print {
             body {
@@ -44,14 +48,12 @@
                     </svg>
                     <div>
                         <h1 class="text-2xl md:text-3xl font-bold uppercase tracking-wide">Controle de Despesas Regional Ampére</h1>
-                        <p class="text-red-200 mt-1">Gestão de almoços e despesas da equipa técnica</p>
+                        <p class="text-red-200 mt-1">Gestão de almoços e despesas da equipe técnica</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
                     <button id="btn-theme-toggle" class="flex items-center justify-center p-2.5 rounded-lg bg-red-800 hover:bg-red-900 text-white border border-red-600 transition-colors">
-                        <svg id="icon-theme" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
+                        <span id="icon-theme-container"></span>
                     </button>
                     <button id="btn-reset-trigger" class="bg-red-800 hover:bg-red-900 text-white text-sm font-semibold px-5 py-2.5 rounded-lg border border-red-600 transition-colors">Repor Dados</button>
                 </div>
@@ -60,27 +62,20 @@
 
         <nav class="bg-white border-b border-gray-200 shadow">
             <div class="max-w-6xl mx-auto px-4 flex flex-wrap gap-2 py-3">
-                <button id="tab-btn-dashboard" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium bg-red-100 text-red-700 transition-colors">
+                <button id="tab-btn-dashboard" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-md font-medium bg-red-100 text-red-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg> Dashboard
                 </button>
-                <button id="tab-btn-add" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Registar Despesa
+                <button id="tab-btn-add" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Registrar Despesa
                 </button>
-                <button id="tab-btn-team" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <button id="tab-btn-team" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Cidades e Técnicos
                 </button>
             </div>
         </nav>
 
-        <div id="toast-container" class="max-w-6xl mx-auto w-full px-4 mt-4 hidden">
-            <div id="toast-body" class="p-4 rounded-md flex items-center gap-3">
-                <span id="toast-icon"></span>
-                <span id="toast-text" class="font-medium"></span>
-            </div>
-        </div>
-
         <main class="max-w-6xl mx-auto w-full px-4 py-8 flex-grow">
-            <section id="content-dashboard" class="space-y-6">
+            <section id="content-dashboard" class="tab-content space-y-6">
                 <div class="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-gray-100">
                     <div class="flex items-center gap-3">
                         <div class="p-2 bg-red-50 text-red-600 rounded-lg">
@@ -130,15 +125,15 @@
                                 </tr>
                             </thead>
                             <tbody id="table-recent-expenses-body">
-                                <tr><td colspan="6" class="p-6 text-center text-gray-400">Nenhuma despesa registada</td></tr>
+                                <tr><td colspan="6" class="p-6 text-center text-gray-400">Nenhuma despesa registrada</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
-            <section id="content-add" class="max-w-xl mx-auto bg-white rounded-xl shadow-sm p-6 border hidden">
-                <h2 class="text-2xl font-bold mb-6">Registar Despesa</h2>
+            <section id="content-add" class="tab-content max-w-xl mx-auto bg-white rounded-xl shadow-sm p-6 border hidden">
+                <h2 class="text-2xl font-bold mb-6">Registrar Despesa</h2>
                 <form id="form-new-expense" class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium mb-2">Tipo de Despesa</label>
@@ -168,6 +163,24 @@
                     <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg">Salvar Despesa</button>
                 </form>
             </section>
+
+            <section id="content-team" class="tab-content max-w-2xl mx-auto bg-white rounded-xl shadow-sm p-6 border hidden">
+                <h2 class="text-2xl font-bold mb-4">Lista de Cidades e Técnicos</h2>
+                <p class="text-sm text-gray-500 mb-6">Visualização dos profissionais vinculados por região geográfica.</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="text-xs uppercase border-b bg-gray-50">
+                                <th class="p-3 font-medium">ID</th>
+                                <th class="p-3 font-medium">Nome do Técnico</th>
+                                <th class="p-3 font-medium">Cidade de Atuação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-team-body">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
         </main>
 
         <footer class="bg-white border-t border-gray-200 py-6 text-center text-xs text-gray-500 mt-auto">
@@ -178,36 +191,29 @@
     <script>
         const CITIES = ['Ampére', 'Capanema', 'Capitão', 'Dois Vizinhos', 'Realeza'];
         const INITIAL_TECHS = [
-            { id: '1', name: 'Ederson', city: 'Ampére' },
-            { id: '2', name: 'Diego', city: 'Ampére' },
-            { id: '3', name: 'Marcos', city: 'Ampére' },
-            { id: '4', name: 'Valdenor', city: 'Ampére' },
-            { id: '5', name: 'Wellinton', city: 'Ampére' },
-            { id: '6', name: 'Mateus', city: 'Ampére' },
-            { id: '7', name: 'Guilherme', city: 'Ampére' },
-            { id: '8', name: 'Vinicios', city: 'Capanema' },
-            { id: '9', name: 'Odair', city: 'Capanema' },
-            { id: '10', name: 'Rodrigo', city: 'Capitão' },
-            { id: '11', name: 'Renan', city: 'Capitão' },
-            { id: '12', name: 'Marcio', city: 'Dois Vizinhos' },
-            { id: '13', name: 'Samuel', city: 'Dois Vizinhos' },
-            { id: '14', name: 'Edson', city: 'Dois Vizinhos' },
-            { id: '15', name: 'Cleverson', city: 'Dois Vizinhos' },
-            { id: '16', name: 'Renan', city: 'Dois Vizinhos' },
-            { id: '17', name: 'Alessandro', city: 'Realeza' },
-            { id: '18', name: 'Kauan', city: 'Realeza' },
-            { id: '19', name: 'Serginho', city: 'Realeza' },
-            { id: '20', name: 'Tiago', city: 'Realeza' }
+            { id: '1', name: 'Ederson', city: 'Ampére' }, { id: '2', name: 'Diego', city: 'Ampére' },
+            { id: '3', name: 'Marcos', city: 'Ampére' }, { id: '4', name: 'Valdenor', city: 'Ampére' },
+            { id: '5', name: 'Wellinton', city: 'Ampére' }, { id: '6', name: 'Mateus', city: 'Ampére' },
+            { id: '7', name: 'Guilherme', city: 'Ampére' }, { id: '8', name: 'Vinicios', city: 'Capanema' },
+            { id: '9', name: 'Odair', city: 'Capanema' }, { id: '10', name: 'Rodrigo', city: 'Capitão' },
+            { id: '11', name: 'Renan', city: 'Capitão' }, { id: '12', name: 'Marcio', city: 'Dois Vizinhos' },
+            { id: '13', name: 'Samuel', city: 'Dois Vizinhos' }, { id: '14', name: 'Edson', city: 'Dois Vizinhos' },
+            { id: '15', name: 'Cleverson', city: 'Dois Vizinhos' }, { id: '16', name: 'Renan', city: 'Dois Vizinhos' },
+            { id: '17', name: 'Alessandro', city: 'Realeza' }, { id: '18', name: 'Kauan', city: 'Realeza' },
+            { id: '19', name: 'Serginho', city: 'Realeza' }, { id: '20', name: 'Tiago', city: 'Realeza' }
         ];
 
         let state = {
             techs: [...INITIAL_TECHS],
             expenses: [],
-            activeTab: 'dashboard',
             selectedMonth: 'all',
             theme: 'light',
             newExpenseType: 'lunch'
         };
+
+        // Ícones SVG do Sol e da Lua
+        const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.344l-.707-.707M12 7a5 5 0 100 10 5 5 0 000-10z"/></svg>`;
+        const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
 
         const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
         
@@ -224,23 +230,75 @@
                 state.expenses = parsed.expenses || [];
                 state.techs = parsed.techs || [...INITIAL_TECHS];
             }
+            const savedTheme = localStorage.getItem('expenseTheme') || 'light';
+            setTheme(savedTheme);
         };
 
         const saveState = () => {
             localStorage.setItem('expenseSystemState', JSON.stringify({ expenses: state.expenses, techs: state.techs }));
         };
 
+        const setTheme = (theme) => {
+            state.theme = theme;
+            const container = document.getElementById('icon-theme-container');
+            if (theme === 'dark') {
+                document.body.classList.add('dark');
+                container.innerHTML = sunIcon; // Mostra Sol no escuro para alternar para o claro
+            } else {
+                document.body.classList.remove('dark');
+                container.innerHTML = moonIcon; // Mostra Lua no claro para alternar para o escuro
+            }
+            localStorage.setItem('expenseTheme', theme);
+        };
+
+        const switchTab = (tabId) => {
+            document.querySelectorAll('.tab-content').forEach(section => section.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-red-100', 'text-red-700');
+                btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+            });
+
+            if (tabId === 'dashboard') {
+                document.getElementById('content-dashboard').classList.remove('hidden');
+                document.getElementById('tab-btn-dashboard').classList.add('bg-red-100', 'text-red-700');
+            } else if (tabId === 'add') {
+                document.getElementById('content-add').classList.remove('hidden');
+                document.getElementById('tab-btn-add').classList.add('bg-red-100', 'text-red-700');
+            } else if (tabId === 'team') {
+                document.getElementById('content-team').classList.remove('hidden');
+                document.getElementById('tab-btn-team').classList.add('bg-red-100', 'text-red-700');
+                renderTeamTable();
+            }
+        };
+
+        const renderTeamTable = () => {
+            const body = document.getElementById('table-team-body');
+            body.innerHTML = state.techs.map(t => `
+                <tr class="border-b hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="p-3 text-gray-500">${t.id}</td>
+                    <td class="p-3 font-semibold">${t.name}</td>
+                    <td class="p-3"><span class="px-2 py-1 bg-red-50 text-red-700 rounded-full text-xs font-bold">${t.city}</span></td>
+                </tr>
+            `).join('');
+        };
+
         const updateUI = () => {
             const filtered = state.selectedMonth === 'all' ? state.expenses : state.expenses.filter(e => e.date && e.date.startsWith(state.selectedMonth));
+            
             const totalExpense = filtered.reduce((acc, curr) => acc + curr.amount, 0);
-            
+            const lunchExpenses = filtered.filter(e => e.type === 'lunch');
+            const totalLunch = lunchExpenses.reduce((acc, curr) => acc + curr.amount, 0);
+            const mediaLunch = lunchExpenses.length ? totalLunch / lunchExpenses.length : 0;
+            const totalDanos = filtered.filter(e => e.type === 'damage_others').reduce((acc, curr) => acc + curr.amount, 0);
+
             document.getElementById('kpi-total').innerText = formatCurrency(totalExpense);
+            document.getElementById('kpi-media').innerText = formatCurrency(mediaLunch);
+            document.getElementById('kpi-danos').innerText = formatCurrency(totalDanos);
             document.getElementById('kpi-count').innerText = filtered.length;
-            
+
             const tableBody = document.getElementById('table-recent-expenses-body');
-            
             if (filtered.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400">Nenhuma despesa registada</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-gray-400">Nenhuma despesa registrada</td></tr>';
             } else {
                 tableBody.innerHTML = filtered.map(exp => `
                     <tr class="border-b">
@@ -249,7 +307,7 @@
                         <td class="p-3">${exp.cityName}</td>
                         <td class="p-3">${exp.type === 'lunch' ? 'Almoço' : 'Outros'}</td>
                         <td class="p-3 font-bold text-red-600">${formatCurrency(exp.amount)}</td>
-                        <td class="p-3"><button onclick="deleteExpense('${exp.id}')" class="text-red-600">Deletar</button></td>
+                        <td class="p-3"><button onclick="deleteExpense('${exp.id}')" class="text-red-600 hover:underline">Deletar</button></td>
                     </tr>
                 `).join('');
             }
@@ -265,6 +323,17 @@
             updateUI();
         };
 
+        // Event Listeners das Abas
+        document.getElementById('tab-btn-dashboard').addEventListener('click', () => switchTab('dashboard'));
+        document.getElementById('tab-btn-add').addEventListener('click', () => switchTab('add'));
+        document.getElementById('tab-btn-team').addEventListener('click', () => switchTab('team'));
+
+        // Event Listener do Tema Escuro
+        document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+            setTheme(state.theme === 'light' ? 'dark' : 'light');
+        });
+
+        // Eventos do Formulário
         document.getElementById('btn-type-lunch').addEventListener('click', (e) => {
             e.preventDefault();
             state.newExpenseType = 'lunch';
@@ -300,32 +369,15 @@
             const amount = parseFloat(document.getElementById('inp-expense-amount').value);
             
             if (!date || !city || !techId || !amount) return;
-            
+
             const tech = state.techs.find(t => t.id === techId);
-            const expense = {
-                id: Date.now().toString(),
-                date,
-                cityName: city,
-                techId,
-                techName: tech.name,
-                type: state.newExpenseType,
-                amount
-            };
+            const expense = { id: Date.now().toString(), date, cityName: city, techId, techName: tech.name, type: state.newExpenseType, amount };
             
             state.expenses.push(expense);
             saveState();
             document.getElementById('form-new-expense').reset();
+            switchTab('dashboard');
             updateUI();
-        }); // <-- Corrigido: Fechamento correto da função e evento
-
-        document.getElementById('tab-btn-dashboard').addEventListener('click', () => {
-            document.getElementById('content-dashboard').classList.remove('hidden');
-            document.getElementById('content-add').classList.add('hidden');
-        });
-
-        document.getElementById('tab-btn-add').addEventListener('click', () => {
-            document.getElementById('content-dashboard').classList.add('hidden');
-            document.getElementById('content-add').classList.remove('hidden');
         });
 
         document.getElementById('btn-reset-trigger').addEventListener('click', () => {
@@ -337,10 +389,10 @@
             }
         });
 
+        // Inicialização
         loadState();
         updateDropdowns();
         updateUI();
     </script>
-    <script src="JS/script.js"></script>
 </body>
 </html>

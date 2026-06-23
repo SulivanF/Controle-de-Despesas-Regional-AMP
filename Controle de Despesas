@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controlo de Despesas Regional Ampére</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Estilos adicionais personalizados para transição suave de tema */
+    .transition-theme {
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Regras personalizadas para o Modo Escuro */
+    body.dark {
+      background-color: #111827;
+      color: #f9fafb;
+    }
+    body.dark .bg-card-custom {
+      background-color: #1f2937;
+      border-color: #374151;
+    }
+    body.dark .text-muted-custom {
+      color: #9ca3af;
+    }
+    body.dark input, body.dark select {
+      background-color: #374151;
+      color: #f9fafb;
+      border-color: #4b5563;
+    }
+    body.dark input::placeholder {
+      color: #9ca3af;
+    }
+    body.dark .border-custom {
+      border-color: #374151;
+    }
+    body.dark .bg-secondary-custom {
+      background-color: #111827;
+    }
+    body.dark .hover-custom:hover {
+      background-color: #374151;
+    }
+
+    /* Configurações específicas para impressão limpa do relatório PDF */
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+      }
+      .print\:hidden {
+        display: none !important;
+      }
+      .print\:block {
+        display: block !important;
+      }
+      .page-break-before {
+        page-break-before: always;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-800 font-sans transition-theme">
+
+  <!-- ========================================== -->
+  <!-- 1. INTERFACE WEB (OCULTA DURANTE A IMPRESSÃO) -->
+  <!-- ========================================== -->
+  <div class="print:hidden flex flex-col min-h-screen">
+    
+    <!-- Cabeçalho (Sempre Vermelho) -->
+    <header class="bg-red-700 text-white shadow-md transition-theme">
+      <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <!-- Logo Oficial Vetorial -->
+          <svg viewBox="0 0 100 100" class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="36" stroke="white" stroke-width="6.5" fill="none" />
+            <path d="M 31 82 Q 41 57 50 28 Q 59 57 69 82 Q 67 85 63 80 Q 55 53 50 41 Q 45 53 37 80 Q 33 85 31 82 Z" fill="white" />
+          </svg>
+          <div>
+            <h1 class="text-2xl md:text-3xl font-bold uppercase tracking-wide">
+              Controlo de Despesas Regional Ampére
+            </h1>
+            <p class="text-red-200 mt-1">Gestão de almoços e despesas da equipa técnica</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 self-start md:self-center">
+          <!-- Alternador de Tema -->
+          <button id="btn-theme-toggle" class="flex items-center justify-center p-2.5 rounded-lg bg-red-800 hover:bg-red-900 text-white border border-red-600 transition-colors" title="Alternar Tema">
+            <!-- Ícone Lua (Modo Escuro) por defeito -->
+            <svg id="icon-theme" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </button>
+          <!-- Botão para Repor Dados -->
+          <button id="btn-reset-trigger" class="flex items-center justify-center bg-red-800 hover:bg-red-900 text-white text-sm font-semibold px-5 py-2.5 rounded-lg border border-red-600 transition-colors" title="Limpar todos os dados">
+            Repor Dados
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navegação / Abas -->
+    <nav class="bg-white border-b border-gray-200 shadow bg-card-custom border-custom transition-theme">
+      <div class="max-w-6xl mx-auto px-4 flex flex-wrap gap-2 py-3">
+        <button id="tab-btn-dashboard" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium bg-red-100 text-red-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+          Dashboard
+        </button>
+        <button id="tab-btn-add" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+          Registar Despesa
+        </button>
+        <button id="tab-btn-team" class="flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          Cidades e Técnicos
+        </button>
+      </div>
+    </nav>
+
+    <!-- Área de Alertas e Notificações -->
+    <div id="toast-container" class="max-w-6xl mx-auto w-full px-4 mt-4 hidden">
+      <div id="toast-body" class="p-4 rounded-md flex items-center gap-3 transition-theme">
+        <span id="toast-icon"></span>
+        <span id="toast-text" class="font-medium"></span>
+      </div>
+    </div>
+
+    <!-- Conteúdo Principal Dinâmico -->
+    <main class="max-w-6xl mx-auto w-full px-4 py-8 flex-grow">
+
+      <!-- ==================== ABA: DASHBOARD ==================== -->
+      <section id="content-dashboard" class="space-y-6">
+        
+        <!-- Filtro Temporal -->
+        <div class="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-gray-100 bg-card-custom border-custom transition-theme">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-red-50 dark:bg-red-950/40 text-red-600 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm sm:text-base">Período de Visualização</h3>
+              <p class="text-xs text-muted-custom">Exibindo dados de: <strong id="lbl-active-month" class="text-red-600 dark:text-red-400">Todos os Meses</strong></p>
+            </div>
+          </div>
+          <div class="w-full sm:w-auto">
+            <select id="select-month-filter" class="w-full sm:w-64 border border-gray-300 rounded-lg p-2.5 outline-none transition bg-white font-medium">
+              <option value="all">Todos os Meses</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Cards com KPIs Financeiros -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-600 bg-card-custom border-custom transition-theme">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-custom">Despesa Total</h3>
+            <p id="kpi-total" class="text-2xl font-bold mt-2">R$ 0,00</p>
+            <p class="text-xs text-muted-custom mt-1">Soma de todos os custos</p>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-500 bg-card-custom border-custom transition-theme">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-custom">Média por Almoço</h3>
+            <div class="mt-2 flex items-baseline gap-2">
+              <p id="kpi-media" class="text-2xl font-bold">R$ 0,00</p>
+              <p id="kpi-media-ref" class="text-xs font-medium text-green-500">(Ref: R$ 60,00)</p>
+            </div>
+            <p class="text-xs text-muted-custom mt-1">Apenas tipo Almoço</p>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-amber-500 bg-card-custom border-custom transition-theme">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-custom">Danos e Outros</h3>
+            <p id="kpi-danos" class="text-2xl font-bold mt-2">R$ 0,00</p>
+            <p class="text-xs text-muted-custom mt-1">Total em outros danos</p>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-red-400 bg-card-custom border-custom transition-theme">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-muted-custom font-bold">Lançamentos</h3>
+            <p id="kpi-count" class="text-2xl font-bold mt-2">0</p>
+            <p class="text-xs text-muted-custom mt-1">Nº total de notas inseridas</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Gasto por Cidade -->
+          <div class="bg-white rounded-xl shadow-sm p-6 bg-card-custom border-custom border transition-theme">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2 border-gray-100 border-custom flex justify-between items-center">
+              <span>Gasto por Cidade</span>
+              <div class="flex items-center gap-2">
+                <button id="btn-export-pdf" class="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded bg-red-600 hover:bg-red-700 text-white transition-all shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                  Exportar Relatório em PDF
+                </button>
+                <span class="text-xs font-medium px-2 py-1 rounded bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400">Ordenado</span>
+              </div>
+            </h2>
+            <div id="list-city-expenses" class="space-y-4">
+              <!-- Renderizado Dinamicamente -->
+            </div>
+          </div>
+
+          <!-- Despesas por Técnico -->
+          <div class="bg-white rounded-xl shadow-sm p-6 bg-card-custom border-custom border transition-theme">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2 border-gray-100 border-custom">Despesas por Técnico</h2>
+            <div id="list-tech-expenses" class="space-y-3">
+              <!-- Renderizado Dinamicamente -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Últimas Despesas -->
+        <div class="bg-white rounded-xl shadow-sm p-6 bg-card-custom border-custom border transition-theme">
+          <h2 class="text-xl font-bold mb-4 border-b pb-2 border-gray-100 border-custom">Últimas Despesas</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="text-sm uppercase tracking-wider border-b border-custom bg-gray-50 dark:bg-gray-900/40 text-muted-custom">
+                  <th class="p-3 font-medium">Data</th>
+                  <th className="p-3 font-medium">Técnico</th>
+                  <th class="p-3 font-medium">Cidade</th>
+                  <th class="p-3 font-medium">Tipo</th>
+                  <th class="p-3 font-medium">Referente a</th>
+                  <th class="p-3 font-medium text-right">Valor</th>
+                  <th class="p-3 font-medium text-center">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="table-recent-expenses-body">
+                <!-- Renderizado Dinamicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ==================== ABA: LANÇAR DESPESA ==================== -->
+      <section id="content-add" class="max-w-xl mx-auto bg-white rounded-xl shadow-sm p-6 lg:p-8 border border-gray-100 bg-card-custom border-custom transition-theme hidden">
+        <h2 class="text-2xl font-bold mb-6 border-b pb-4 border-custom">Registar Despesa</h2>
+        <form id="form-new-expense" class="space-y-5">
+          
+          <!-- Tipo de Despesa -->
+          <div>
+            <label class="block text-sm font-medium mb-2 text-muted-custom">Tipo de Despesa</label>
+            <div class="grid grid-cols-2 gap-4">
+              <button type="button" id="btn-type-lunch" class="py-3 px-4 rounded-lg font-semibold text-sm border shadow-md bg-red-600 text-white border-red-600 transition-all">
+                Almoço (Ref: R$ 60,00)
+              </button>
+              <button type="button" id="btn-type-damage" class="py-3 px-4 rounded-lg font-semibold text-sm border bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-650 transition-all">
+                Danos e Outros
+              </button>
+            </div>
+          </div>
+
+          <!-- Cidade -->
+          <div>
+            <label class="block text-sm font-medium mb-1 text-muted-custom">Cidade</label>
+            <select id="inp-expense-city" class="w-full border rounded-lg p-3 outline-none transition bg-white font-medium" required>
+              <option value="">Selecione a cidade...</option>
+              <!-- Preenchido via JS -->
+            </select>
+          </div>
+
+          <!-- Técnico -->
+          <div>
+            <label class="block text-sm font-medium mb-1 text-muted-custom">Técnico</label>
+            <select id="inp-expense-tech" class="w-full border rounded-lg p-3 outline-none transition disabled:bg-gray-100 dark:disabled:bg-gray-900 bg-white font-medium" disabled required>
+              <option value="">Selecione o técnico...</option>
+            </select>
+          </div>
+
+          <!-- Referente a (Campo condicional) -->
+          <div id="box-expense-reference" class="hidden">
+            <label class="block text-sm font-medium mb-1 text-muted-custom">Despesa Referente</label>
+            <input type="text" id="inp-expense-reference" placeholder="Ex: Conserto de Pneus, Manutenção de Telhado, Encanamento" class="w-full border rounded-lg p-3 outline-none transition">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1 text-muted-custom">Data</label>
+              <input type="date" id="inp-expense-date" class="w-full border rounded-lg p-3 outline-none transition" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1 text-muted-custom">Valor (R$)</label>
+              <input type="number" step="0.01" min="0" id="inp-expense-amount" placeholder="60.00" class="w-full border rounded-lg p-3 outline-none transition" required>
+              <p id="lbl-expense-amount-hint" class="text-xs text-muted-custom mt-1">Referência recomendada: R$ 60,00</p>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors mt-4 shadow-sm">
+            Salvar Despesa
+          </button>
+        </form>
+      </section>
+
+      <!-- ==================== ABA: CIDADES E TÉCNICOS ==================== -->
+      <section id="content-team" class="space-y-8 hidden">
+        
+        <!-- Adicionar Técnico -->
+        <div class="rounded-xl shadow-sm p-6 border-l-4 border-red-600 bg-white bg-card-custom border-custom transition-theme">
+          <h2 class="text-xl font-bold mb-4">Adicionar Técnico</h2>
+          <form id="form-new-tech" class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="flex-1 w-full">
+              <label class="block text-sm font-medium mb-1 text-muted-custom">Cidade de Atuação</label>
+              <select id="inp-newtech-city" class="w-full border rounded-lg p-3 outline-none bg-white font-medium">
+                <!-- Preenchido via JS -->
+              </select>
+            </div>
+            <div class="flex-1 w-full">
+              <label class="block text-sm font-medium mb-1 text-muted-custom">Nome Completo</label>
+              <input type="text" id="inp-newtech-name" placeholder="Ex: João Silva" class="w-full border rounded-lg p-3 outline-none" required>
+            </div>
+            <button type="submit" class="w-full md:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-sm">
+              Adicionar
+            </button>
+          </form>
+        </div>
+
+        <!-- Lista de Cidades e Técnicos -->
+        <div id="grid-cities-members" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Renderizado Dinamicamente -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="bg-white border-t border-gray-200 py-6 text-center text-xs text-gray-500 bg-card-custom border-custom transition-theme mt-auto">
+      <div class="max-w-6xl mx-auto px-4">
+        <p>© 2026 - Controlo de Despesas Regional Ampére. Desenvolvido para gestão integrada.</p>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 2. LAYOUT DE IMPRESSÃO EXCLUSIVO (PDF)     -->
+  <!-- ========================================== -->
+  <div class="hidden print:block bg-white text-black p-8 font-serif leading-relaxed text-sm">
+    <!-- Cabeçalho do PDF -->
+    <div class="flex justify-between items-center border-b-2 border-red-700 pb-4 mb-6">
+      <div class="flex items-center gap-4">
+        <!-- Logo Escuro Oficial -->
+        <svg viewBox="0 0 100 100" class="w-16 h-16 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="36" stroke="#b91c1c" stroke-width="6.5" fill="none" />
+          <path d="M 31 82 Q 41 57 50 28 Q 59 57 69 82 Q 67 85 63 80 Q 55 53 50 41 Q 45 53 37 80 Q 33 85 31 82 Z" fill="#b91c1c" />
+        </svg>
+        <div>
+          <h1 class="text-xl font-bold uppercase tracking-wide text-red-800">
+            Controlo de Despesas Regional Ampére
+          </h1>
+          <p class="text-gray-500 text-xs">Relatório Consolidado de Gastos da Equipe Técnica</p>
+        </div>
+      </div>
+      <div class="text-right text-xs text-gray-500">
+        <p><strong>Gerado em:</strong> <span id="print-date">--/--/----</span></p>
+        <p><strong>Filtro:</strong> <span id="print-filter">--</span></p>
+      </div>
+    </div>
+
+    <!-- Resumo de Custos do PDF -->
+    <div class="mb-8">
+      <h2 class="text-sm font-bold uppercase text-gray-700 mb-3 border-b border-gray-300 pb-1">Resumo do Período</h2>
+      <div class="grid grid-cols-4 gap-4">
+        <div class="border border-gray-200 p-3 rounded">
+          <span class="text-xs text-gray-500 block uppercase font-semibold">Despesa Total</span>
+          <span id="print-kpi-total" class="text-lg font-bold text-gray-900">R$ 0,00</span>
+        </div>
+        <div class="border border-gray-200 p-3 rounded">
+          <span class="text-xs text-gray-500 block uppercase font-semibold">Média por Almoço</span>
+          <span id="print-kpi-media" class="text-lg font-bold text-gray-900">R$ 0,00</span>
+        </div>
+        <div class="border border-gray-200 p-3 rounded">
+          <span class="text-xs text-gray-500 block uppercase font-semibold">Danos e Outros</span>
+          <span id="print-kpi-danos" class="text-lg font-bold text-gray-900">R$ 0,00</span>
+        </div>
+        <div class="border border-gray-200 p-3 rounded">
+          <span class="text-xs text-gray-500 block uppercase font-semibold">Lançamentos</span>
+          <span id="print-kpi-count" class="text-lg font-bold text-gray-900">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divisão Analítica de Gastos -->
+    <div class="grid grid-cols-2 gap-8 mb-8">
+      <!-- Cidades -->
+      <div>
+        <h2 class="text-sm font-bold uppercase text-gray-700 mb-3 border-b border-gray-300 pb-1">Despesas por Cidade</h2>
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="border-b-2 border-gray-200 text-left">
+              <th class="py-2">Cidade</th>
+              <th class="py-2 text-right">Total Gasto</th>
+            </tr>
+          </thead>
+          <tbody id="print-table-city-body">
+            <!-- Dinâmico -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Técnicos -->
+      <div>
+        <h2 class="text-sm font-bold uppercase text-gray-700 mb-3 border-b border-gray-300 pb-1">Despesas por Técnico</h2>
+        <table class="w-full text-xs">
+          <thead>
+            <tr class="border-b-2 border-gray-200 text-left">
+              <th class="py-2">Técnico (Cidade)</th>
+              <th class="py-2 text-center">Nº Notas</th>
+              <th class="py-2 text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody id="print-table-tech-body">
+            <!-- Dinâmico -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Extrato Geral Detalhado -->
+    <div class="page-break-before pt-6">
+      <h2 class="text-sm font-bold uppercase text-gray-700 mb-3 border-b border-gray-300 pb-1">Listagem Analítica de Lançamentos</h2>
+      <table class="w-full text-xs text-left">
+        <thead>
+          <tr class="border-b-2 border-gray-200 bg-gray-50">
+            <th class="p-2">Data</th>
+            <th class="p-2">Técnico</th>
+            <th class="p-2">Cidade</th>
+            <th class="p-2">Tipo de Despesa</th>
+            <th class="p-2">Referente a</th>
+            <th class="p-2 text-right">Valor</th>
+          </tr>
+        </thead>
+        <tbody id="print-table-expenses-body">
+          <!-- Dinâmico -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Rodapé PDF -->
+    <div class="mt-16 text-center text-xs text-gray-400 border-t border-gray-200 pt-4">
+      <p>Relatório emitido para controlo operacional interno - Regional Ampére.</p>
+      <p>© 2026 - Sistema de Gestão Financeira Regional</p>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 3. MODAIS INTERATIVOS (OCULTOS NA IMPRESSÃO) -->
+  <!-- ========================================== -->
+  <div class="print:hidden">
+    
+    <!-- Modal: Edição de Despesa -->
+    <div id="modal-edit" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden border border-gray-100 bg-card-custom border-custom transition-theme">
+        <div class="bg-blue-700 p-5 text-white flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+          <h3 class="text-lg font-bold">Editar Informações da Despesa</h3>
+        </div>
+        <form id="form-edit-expense">
+          <input type="hidden" id="edit-expense-id">
+          <div class="p-6 space-y-4">
+            
+            <!-- Tipo Despesa na Edição -->
+            <div>
+              <label class="block text-sm font-medium mb-2 text-muted-custom">Tipo de Despesa</label>
+              <div class="grid grid-cols-2 gap-3">
+                <button type="button" id="btn-edit-type-lunch" class="py-2 px-3 rounded-lg font-semibold text-xs border transition-all">
+                  Almoço
+                </button>
+                <button type="button" id="btn-edit-type-damage" class="py-2 px-3 rounded-lg font-semibold text-xs border transition-all">
+                  Danos e Outros
+                </button>
+              </div>
+            </div>
+
+            <!-- Data -->
+            <div>
+              <label class="block text-sm font-medium mb-1 text-muted-custom">Data</label>
+              <input type="date" id="inp-edit-date" class="w-full border rounded-lg p-2.5 outline-none transition" required>
+            </div>
+
+            <!-- Cidade -->
+            <div>
+              <label class="block text-sm font-medium mb-1 text-muted-custom">Cidade</label>
+              <select id="inp-edit-city" class="w-full border rounded-lg p-2.5 outline-none bg-white font-medium" required>
+                <!-- JS -->
+              </select>
+            </div>
+
+            <!-- Técnico -->
+            <div>
+              <label class="block text-sm font-medium mb-1 text-muted-custom">Técnico</label>
+              <select id="inp-edit-tech" class="w-full border rounded-lg p-2.5 outline-none bg-white font-medium" required>
+                <option value="">Selecione o técnico...</option>
+              </select>
+            </div>
+
+            <!-- Referente a na Edição -->
+            <div id="box-edit-reference" class="hidden">
+              <label class="block text-sm font-medium mb-1 text-muted-custom">Despesa Referente</label>
+              <input type="text" id="inp-edit-reference" placeholder="Ex: Conserto de Pneus, Manutenção de Telhado, Encanamento" class="w-full border rounded-lg p-2.5 outline-none">
+            </div>
+
+            <!-- Valor -->
+            <div>
+              <label class="block text-sm font-medium mb-1 text-muted-custom">Valor (R$)</label>
+              <input type="number" step="0.01" min="0" id="inp-edit-amount" class="w-full border rounded-lg p-2.5 outline-none" required>
+            </div>
+
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-900/40 px-6 py-4 flex items-center justify-end gap-3 border-t border-custom">
+            <button type="button" id="btn-edit-cancel" class="px-4 py-2 text-sm font-medium rounded-lg text-muted-custom hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              Cancelar
+            </button>
+            <button type="submit" class="px-5 py-2 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm">
+              Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Confirmação de Reposição / Reset -->
+    <div id="modal-reset" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden border border-red-100 bg-card-custom border-custom transform transition-all">
+        <div class="bg-red-700 p-5 text-white flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3-3 3 3m-3-3v12" /></svg>
+          <h3 class="text-lg font-bold">Confirmar Reposição de Dados</h3>
+        </div>
+        <div class="p-6">
+          <p class="leading-relaxed mb-4 text-muted-custom">
+            Tem a certeza de que deseja <strong class="text-red-600 dark:text-red-400">limpar o sistema</strong>? Todas as despesas registadas serão apagadas por completo para iniciar um novo ciclo operacional.
+          </p>
+          <div class="rounded-lg p-3 text-xs flex items-start gap-2.5 border bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-400 border-red-100 dark:border-red-900/50">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Esta operação é definitiva. Os lançamentos de despesas serão perdidos e os técnicos retornarão para a lista original de colaboradores da regional.</span>
+          </div>
+        </div>
+        <div class="px-6 py-4 flex items-center justify-end gap-3 border-t border-custom bg-gray-50 dark:bg-gray-900/40">
+          <button type="button" id="btn-reset-cancel" class="px-4 py-2 text-sm font-medium rounded-lg text-muted-custom hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+            Cancelar
+          </button>
+          <button type="button" id="btn-reset-confirm" class="px-5 py-2 text-sm font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors shadow-sm">
+            Sim, Limpar Dados
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 4. SCRIPT DE CONTROLO DE ESTADO (JS)       -->
+  <!-- ========================================== -->
+  <script>
+    // --- ESTADO GLOBAL DO SISTEMA ---
+    const CITIES = ['Ampére', 'Capanema', 'Capitão', 'Dois Vizinhos', 'Realeza'];
+    
+    const INITIAL_TECHS = [
+      { id: '1', name: 'Ederson', city: 'Ampére' },
+      { id: '2', name: 'Diego', city: 'Ampére' },
+      { id: '3', name: 'Marcos', city: 'Ampére' },
+      { id: '4', name: 'Valdenor', city: 'Ampére' },
+      { id: '5', name: 'Wellinton', city: 'Ampére' },
+      { id: '6', name: 'Mateus', city: 'Ampére' },
+      { id: '7', name: 'Guilherme', city: 'Ampére' },
+      { id: '8', name: 'Vinicios', city: 'Capanema' },
+      { id: '9', name: 'Odair', city: 'Capanema' },
+      { id: '10', name: 'Rodrigo', city: 'Capitão' },
+      { id: '11', name: 'Renan', city: 'Capitão' },
+      { id: '12', name: 'Marcio', city: 'Dois Vizinhos' },
+      { id: '13', name: 'Samuel', city: 'Dois Vizinhos' },
+      { id: '14', name: 'Edson', city: 'Dois Vizinhos' },
+      { id: '15', name: 'Cleverson', city: 'Dois Vizinhos' },
+      { id: '16', name: 'Renan', city: 'Dois Vizinhos' },
+      { id: '17', name: 'Alessandro', city: 'Realeza' },
+      { id: '18', name: 'Kauan', city: 'Realeza' },
+      { id: '19', name: 'Serginho', city: 'Realeza' },
+      { id: '20', name: 'Tiago', city: 'Realeza' },
+    ];
+
+    let state = {
+      techs: [...INITIAL_TECHS],
+      expenses: [],
+      activeTab: 'dashboard',
+      selectedMonth: 'all',
+      theme: 'light',
+      newExpenseType: 'lunch',
+      editExpenseType: 'lunch'
+    };
+
+    const BUDGET_PER_LUNCH = 60.00;
+
+    // --- FORMATAÇÃO DE DADOS ---
+    const formatCurrency = (value) => {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    };
+
+    const formatDate = (dateString) => {
+      if (!dateString) return '';
+      const [year, month, day] = dateString.split('-');
+      return `${day}/${month}/${year}`;
+    };
+
+    const getMonthLabel = (yearMonthStr) => {
+      if (!yearMonthStr || yearMonthStr === 'all') return 'Todos os Meses';
+      const [year, month] = yearMonthStr.split('-');
+      const monthNames = [
+        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+      ];
+      return `${monthNames[parseInt(month, 10) - 1]} / ${year}`;
+    };
+
+    // --- MANIPULAÇÃO DE TOAST (ALERTAS) ---
+    let toastTimeout;
+    const showMessage = (text, isError = false) => {
+      const container = document.getElementById('toast-container');
+      const body = document.getElementById('toast-body');
+      const icon = document.getElementById('toast-icon');
+      const label = document.getElementById('toast-text');
+
+      clearTimeout(toastTimeout);
+
+      label.innerText = text;
+
+      // Estilização condicional do alerta
+      if (isError) {
+        body.className = "p-4 rounded-md flex items-center gap-3 bg-red-100 text-red-800 border border-red-200";
+        icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+      } else {
+        if (state.theme === 'light') {
+          body.className = "p-4 rounded-md flex items-center gap-3 bg-green-100 text-green-800 border border-green-200";
+        } else {
+          body.className = "p-4 rounded-md flex items-center gap-3 bg-green-950/50 text-green-400 border border-green-900/50";
+        }
+        icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+      }
+
+      container.classList.remove('hidden');
+      toastTimeout = setTimeout(() => {
+        container.classList.add('hidden');
+      }, 3500);
+    };
+
+    // --- CONTROLO DAS ABAS DE NAVEGAÇÃO ---
+    const switchTab = (tabName) => {
+      state.activeTab = tabName;
+      
+      // Controlar classes dos botões das abas
+      const tabs = ['dashboard', 'add', 'team'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const content = document.getElementById(`content-${t}`);
+        
+        if (t === tabName) {
+          // Ativo
+          if (state.theme === 'light') {
+            btn.className = "flex items-center gap-2 px-4 py-2 rounded-md font-medium bg-red-100 text-red-700 transition-colors";
+          } else {
+            btn.className = "flex items-center gap-2 px-4 py-2 rounded-md font-medium bg-red-950/60 text-red-400 transition-colors";
+          }
+          content.classList.remove('hidden');
+        } else {
+          // Inativo
+          btn.className = "flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors";
+          content.classList.add('hidden');
+        }
+      });
+
+      // Atualizar o ecrã ativo
+      updateUI();
+    };
+
+    // --- MOTOR DE CÁLCULO E RENDERIZAÇÃO ---
+    const updateUI = () => {
+      // 1. Filtragem das despesas por período (Ano-Mês)
+      const filtered = state.selectedMonth === 'all' 
+        ? state.expenses 
+        : state.expenses.filter(e => e.date && e.date.startsWith(state.selectedMonth));
+
+      // 2. Cálculos Globais
+      const totalExpense = filtered.reduce((acc, curr) => acc + curr.amount, 0);
+
+      const lunchExpenses = filtered.filter(e => e.type === 'lunch');
+      const totalLunchExpense = lunchExpenses.reduce((acc, curr) => acc + curr.amount, 0);
+      const averageExpense = lunchExpenses.length ? totalLunchExpense / lunchExpenses.length : 0;
+
+      const damagesExpenses = filtered.filter(e => e.type === 'damage_others');
+      const totalDamagesExpense = damagesExpenses.reduce((acc, curr) => acc + curr.amount, 0);
+
+      // Atualizar KPIs Web
+      document.getElementById('kpi-total').innerText = formatCurrency(totalExpense);
+      document.getElementById('kpi-media').innerText = formatCurrency(averageExpense);
+      document.getElementById('kpi-danos').innerText = formatCurrency(totalDamagesExpense);
+      document.getElementById('kpi-count').innerText = filtered.length;
+
+      // Cor de alerta do KPI de média
+      const mediaRefLabel = document.getElementById('kpi-media-ref');
+      if (averageExpense > BUDGET_PER_LUNCH) {
+        mediaRefLabel.className = "text-xs font-medium text-red-500";
+      } else {
+        mediaRefLabel.className = "text-xs font-medium text-green-500";
+      }
+
+      // Atualizar legenda de período ativo
+      document.getElementById('lbl-active-month').innerText = getMonthLabel(state.selectedMonth);
+
+      // --- ATUALIZAR DROPDOWN DE FILTRO POR MÊS ---
+      const monthsSet = new Set();
+      state.expenses.forEach(e => {
+        if (e.date) {
+          const [year, month] = e.date.split('-');
+          monthsSet.add(`${year}-${month}`);
+        }
+      });
+      const sortedMonths = Array.from(monthsSet).sort((a, b) => b.localeCompare(a));
+      
+      const filterSelect = document.getElementById('select-month-filter');
+      // Limpar opções mantendo a padrão
+      filterSelect.innerHTML = `<option value="all">Todos os Meses</option>`;
+      sortedMonths.forEach(m => {
+        const option = document.createElement('option');
+        option.value = m;
+        option.innerText = getMonthLabel(m);
+        if (m === state.selectedMonth) {
+          option.selected = true;
+        }
+        filterSelect.appendChild(option);
+      });
+
+      // --- RENDIMENTO DE GASTOS POR CIDADE (ORDENADO) ---
+      const cityMap = {};
+      filtered.forEach(e => {
+        cityMap[e.cityName] = (cityMap[e.cityName] || 0) + e.amount;
+      });
+      CITIES.forEach(c => {
+        if (!cityMap[c]) cityMap[c] = 0;
+      });
+      const sortedCityExpenses = Object.entries(cityMap).sort((a, b) => b[1] - a[1]);
+
+      const cityListContainer = document.getElementById('list-city-expenses');
+      if (sortedCityExpenses.length === 0 || totalExpense === 0) {
+        cityListContainer.innerHTML = `<p class="italic py-4 text-center text-muted-custom">Nenhum gasto registado neste período.</p>`;
+      } else {
+        cityListContainer.innerHTML = sortedCityExpenses.map(([city, val]) => `
+          <div class="flex justify-between items-center py-1.5 border-b last:border-0 border-custom">
+            <span class="font-medium">${city}</span>
+            <span class="font-bold text-red-600">${formatCurrency(val)}</span>
+          </div>
+        `).join('');
+      }
+
+      // --- RENDIMENTO DE DESPESAS POR TÉCNICO ---
+      const techMap = {};
+      filtered.forEach(e => {
+        if (!techMap[e.techId]) {
+          techMap[e.techId] = { name: e.techName, city: e.cityName, amount: 0, count: 0 };
+        }
+        techMap[e.techId].amount += e.amount;
+        techMap[e.techId].count += 1;
+      });
+      const sortedTechRanking = Object.values(techMap).sort((a, b) => b.amount - a.amount);
+
+      const techListContainer = document.getElementById('list-tech-expenses');
+      if (sortedTechRanking.length === 0) {
+        techListContainer.innerHTML = `<p class="italic py-4 text-center text-muted-custom">Nenhum gasto registado neste período.</p>`;
+      } else {
+        techListContainer.innerHTML = sortedTechRanking.map((t, idx) => `
+          <div class="flex justify-between items-center p-3 rounded-lg bg-secondary-custom">
+            <div class="flex items-center gap-3">
+              <span class="w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ${idx === 0 ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}">
+                ${idx + 1}
+              </span>
+              <div>
+                <p class="font-medium leading-tight">${t.name}</p>
+                <p class="text-xs text-muted-custom">${t.city} • ${t.count} despesa(s)</p>
+              </div>
+            </div>
+            <span class="font-bold">${formatCurrency(t.amount)}</span>
+          </div>
+        `).join('');
+      }
+
+      // --- RENDIMENTO DA TABELA: ÚLTIMAS DESPESAS ---
+      const recentExpensesSorted = [...filtered].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const tableBody = document.getElementById('table-recent-expenses-body');
+      
+      if (recentExpensesSorted.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colSpan="7" class="p-6 text-center italic text-muted-custom">Nenhuma despesa lançada para este período.</td>
+          </tr>
+        `;
+      } else {
+        tableBody.innerHTML = recentExpensesSorted.map(exp => {
+          const badgeClass = exp.type === 'damage_others' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800';
+          const badgeText = exp.type === 'damage_others' ? 'Danos / Outros' : 'Almoço';
+          const refText = exp.type === 'damage_others' ? (exp.reference || '-') : '-';
+          const alertDot = (exp.type === 'lunch' && exp.amount > BUDGET_PER_LUNCH) 
+            ? `<span class="ml-2 inline-block w-2.5 h-2.5 rounded-full bg-red-500" title="Acima do valor de referência de R$ 60,00"></span>` 
+            : '';
+
+          return `
+            <tr class="border-b border-custom hover-custom transition-theme">
+              <td class="p-3 text-muted-custom">${formatDate(exp.date)}</td>
+              <td class="p-3 font-medium">${exp.techName}</td>
+              <td class="p-3 text-muted-custom">${exp.cityName}</td>
+              <td class="p-3">
+                <span class="inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+                  ${badgeText}
+                </span>
+              </td>
+              <td class="p-3 text-sm italic max-w-xs truncate text-muted-custom" title="${exp.reference || 'Não informada'}">
+                ${refText}
+              </td>
+              <td class="p-3 font-bold text-red-600 text-right">
+                ${formatCurrency(exp.amount)}${alertDot}
+              </td>
+              <td class="p-3">
+                <div class="flex items-center justify-center gap-3">
+                  <button onclick="openEditModal('${exp.id}')" class="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-all" title="Editar Lançamento">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  </button>
+                  <button onclick="deleteExpense('${exp.id}')" class="text-gray-400 hover:text-red-600 p-1 rounded hover:bg-red-50 dark:hover:bg-red-950/20 transition-all" title="Deletar Lançamento">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // --- RENDIMENTO DE MEMBROS E EQUIPAS (TAB TÉCNICOS) ---
+      const gridMembers = document.getElementById('grid-cities-members');
+      gridMembers.innerHTML = CITIES.map(city => {
+        const cityTechs = state.techs.filter(t => t.city === city);
+        return `
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col border border-gray-100 bg-card-custom border-custom transition-theme">
+            <div class="px-4 py-3 border-b border-custom flex justify-between items-center bg-gray-100 dark:bg-gray-900/30">
+              <h3 class="font-bold">${city}</h3>
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-950/50 text-red-800 dark:text-red-400">
+                ${cityTechs.length} técnicos
+              </span>
+            </div>
+            <div class="p-4 flex-1">
+              ${cityTechs.length === 0 ? `
+                <p class="text-sm italic py-4 text-muted-custom">Nenhum técnico cadastrado nesta cidade.</p>
+              ` : `
+                <ul class="space-y-2">
+                  ${cityTechs.map(tech => `
+                    <li class="flex justify-between items-center group p-2.5 rounded-lg transition-colors bg-gray-50 dark:bg-gray-900/40 hover:bg-red-50/40 dark:hover:bg-red-950/10">
+                      <span class="font-medium">${tech.name}</span>
+                      <button onclick="removeTechnician('${tech.id}')" class="text-gray-400 hover:text-red-600 p-1 rounded transition-colors duration-150" title="Remover ${tech.name}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
+                    </li>
+                  `).join('')}
+                </ul>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // --- POPULAR ELEMENTOS DINÂMICOS DO PDF DE IMPRESSÃO ---
+      document.getElementById('print-date').innerText = new Date().toLocaleDateString('pt-BR');
+      document.getElementById('print-filter').innerText = getMonthLabel(state.selectedMonth);
+      document.getElementById('print-kpi-total').innerText = formatCurrency(totalExpense);
+      document.getElementById('print-kpi-media').innerText = formatCurrency(averageExpense);
+      document.getElementById('print-kpi-danos').innerText = formatCurrency(totalDamagesExpense);
+      document.getElementById('print-kpi-count').innerText = filtered.length;
+
+      // Cidades no PDF
+      document.getElementById('print-table-city-body').innerHTML = sortedCityExpenses.map(([city, val]) => `
+        <tr class="border-b border-gray-100">
+          <td class="py-1.5 font-medium">${city}</td>
+          <td class="py-1.5 text-right font-bold text-gray-900">${formatCurrency(val)}</td>
+        </tr>
+      `).join('');
+
+      // Técnicos no PDF
+      document.getElementById('print-table-tech-body').innerHTML = sortedTechRanking.length === 0 ? `
+        <tr><td colSpan="3" class="py-4 text-center text-gray-400 italic">Sem registos neste período.</td></tr>
+      ` : sortedTechRanking.map(t => `
+        <tr class="border-b border-gray-100">
+          <td class="py-1.5">${t.name} (${t.city})</td>
+          <td class="py-1.5 text-center">${t.count}</td>
+          <td class="py-1.5 text-right font-bold text-gray-900">${formatCurrency(t.amount)}</td>
+        </tr>
+      `).join('');
+
+      // Lançamentos no PDF
+      document.getElementById('print-table-expenses-body').innerHTML = recentExpensesSorted.length === 0 ? `
+        <tr><td colSpan="6" class="p-4 text-center text-gray-400 italic">Sem registos de despesas no período selecionado.</td></tr>
+      ` : recentExpensesSorted.map(exp => `
+        <tr class="border-b border-gray-100">
+          <td class="p-2">${formatDate(exp.date)}</td>
+          <td class="p-2 font-medium">${exp.techName}</td>
+          <td class="p-2">${exp.cityName}</td>
+          <td class="p-2 font-semibold">${exp.type === 'damage_others' ? 'Danos / Outros' : 'Almoço'}</td>
+          <td class="p-2 italic text-gray-600">${exp.type === 'damage_others' ? (exp.reference || '-') : '-'}</td>
+          <td class="p-2 text-right font-bold">${formatCurrency(exp.amount)}</td>
+        </tr>
+      `).join('');
+    };
+
+    // --- FORMULÁRIOS DINÂMICOS: PREENCHIMENTO DE COMBOS ---
+    const updateDropdowns = () => {
+      // Combo Cidades Novo Lançamento
+      const selectCity = document.getElementById('inp-expense-city');
+      selectCity.innerHTML = `<option value="">Selecione a cidade...</option>` + 
+        CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+
+      // Combo Cidades Novo Técnico
+      const selectNewTechCity = document.getElementById('inp-newtech-city');
+      selectNewTechCity.innerHTML = CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+
+      // Combo Cidades Edição
+      const selectEditCity = document.getElementById('inp-edit-city');
+      selectEditCity.innerHTML = CITIES.map(c => `<option value="${c}">${c}</option>`).join('');
+    };
+
+    const updateTechDropdown = (city, elementId) => {
+      const selectTech = document.getElementById(elementId);
+      if (!city) {
+        selectTech.innerHTML = `<option value="">Selecione o técnico...</option>`;
+        selectTech.disabled = true;
+        return;
+      }
+      const filteredTechs = state.techs.filter(t => t.city === city);
+      selectTech.innerHTML = `<option value="">Selecione o técnico...</option>` + 
+        filteredTechs.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+      selectTech.disabled = false;
+    };
+
+    // --- AÇÕES DOS LANÇAMENTOS (CRIAR, EDITAR, REMOVER) ---
+    
+    // Deletar Despesa
+    window.deleteExpense = (id) => {
+      state.expenses = state.expenses.filter(e => e.id !== id);
+      showMessage('Despesa removida.');
+      updateUI();
+    };
+
+    // Remover Técnico
+    window.removeTechnician = (id) => {
+      state.techs = state.techs.filter(t => t.id !== id);
+      showMessage('Técnico removido do sistema.');
+      updateUI();
+    };
+
+    // Abrir Modal de Edição
+    window.openEditModal = (id) => {
+      const exp = state.expenses.find(e => e.id === id);
+      if (!exp) return;
+
+      document.getElementById('edit-expense-id').value = exp.id;
+      document.getElementById('inp-edit-date').value = exp.date;
+      document.getElementById('inp-edit-city').value = exp.cityName;
+      updateTechDropdown(exp.cityName, 'inp-edit-tech');
+      document.getElementById('inp-edit-tech').value = exp.techId;
+      document.getElementById('inp-edit-amount').value = exp.amount;
+
+      // Configurar estado do Tipo na Edição
+      state.editExpenseType = exp.type || 'lunch';
+      toggleEditTypeStyles();
+
+      if (state.editExpenseType === 'damage_others') {
+        document.getElementById('box-edit-reference').classList.remove('hidden');
+        document.getElementById('inp-edit-reference').value = exp.reference || '';
+      } else {
+        document.getElementById('box-edit-reference').classList.add('hidden');
+        document.getElementById('inp-edit-reference').value = '';
+      }
+
+      document.getElementById('modal-edit').classList.remove('hidden');
+    };
+
+    // Alternar estilos visuais dos botões de tipo na criação
+    const toggleCreateTypeStyles = () => {
+      const btnLunch = document.getElementById('btn-type-lunch');
+      const btnDamage = document.getElementById('btn-type-damage');
+      const boxRef = document.getElementById('box-expense-reference');
+      const hint = document.getElementById('lbl-expense-amount-hint');
+
+      if (state.newExpenseType === 'lunch') {
+        btnLunch.className = "py-3 px-4 rounded-lg font-semibold text-sm border shadow-md bg-red-600 text-white border-red-600 transition-all";
+        btnDamage.className = `py-3 px-4 rounded-lg font-semibold text-sm border transition-all ${state.theme === 'light' ? 'bg-white text-gray-700 border-gray-300' : 'bg-gray-700 text-gray-200 border-gray-600'}`;
+        boxRef.classList.add('hidden');
+        document.getElementById('inp-expense-reference').value = '';
+        hint.innerText = "Referência recomendada: R$ 60,00";
+      } else {
+        btnLunch.className = `py-3 px-4 rounded-lg font-semibold text-sm border transition-all ${state.theme === 'light' ? 'bg-white text-gray-700 border-gray-300' : 'bg-gray-700 text-gray-200 border-gray-600'}`;
+        btnDamage.className = "py-3 px-4 rounded-lg font-semibold text-sm border shadow-md bg-amber-600 text-white border-amber-600 transition-all";
+        boxRef.classList.remove('hidden');
+        hint.innerText = "Custo de danos operacionais";
+      }
+    };
+
+    // Alternar estilos visuais dos botões de tipo na edição
+    const toggleEditTypeStyles = () => {
+      const btnLunch = document.getElementById('btn-edit-type-lunch');
+      const btnDamage = document.getElementById('btn-edit-type-damage');
+      const boxRef = document.getElementById('box-edit-reference');
+
+      if (state.editExpenseType === 'lunch') {
+        btnLunch.className = "py-2 px-3 rounded-lg font-semibold text-xs border shadow-sm bg-blue-600 text-white border-blue-600 transition-all";
+        btnDamage.className = `py-2 px-3 rounded-lg font-semibold text-xs border transition-all ${state.theme === 'light' ? 'bg-white text-gray-700 border-gray-300' : 'bg-gray-700 text-gray-200 border-gray-600'}`;
+        boxRef.classList.add('hidden');
+        document.getElementById('inp-edit-reference').value = '';
+      } else {
+        btnLunch.className = `py-2 px-3 rounded-lg font-semibold text-xs border transition-all ${state.theme === 'light' ? 'bg-white text-gray-700 border-gray-300' : 'bg-gray-700 text-gray-200 border-gray-600'}`;
+        btnDamage.className = "py-2 px-3 rounded-lg font-semibold text-xs border shadow-sm bg-amber-600 text-white border-amber-600 transition-all";
+        boxRef.classList.remove('hidden');
+      }
+    };
+
+
+    // --- INICIALIZAÇÃO E EVENTOS DE ASSINATURA ---
+    window.addEventListener('DOMContentLoaded', () => {
+      
+      // Popular Dropdowns Iniciais
+      updateDropdowns();
+      
+      // Forçar Renderização inicial
+      switchTab('dashboard');
+
+      // --- Ouvintes de Tab ---
+      document.getElementById('tab-btn-dashboard').addEventListener('click', () => switchTab('dashboard'));
+      document.getElementById('tab-btn-add').addEventListener('click', () => switchTab('add'));
+      document.getElementById('tab-btn-team').addEventListener('click', () => switchTab('team'));
+
+      // --- Ouvintes do Modo Escuro ---
+      document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+        toggleTheme();
+      });
+
+      const toggleTheme = () => {
+        const body = document.body;
+        const icon = document.getElementById('icon-theme');
+        if (state.theme === 'light') {
+          state.theme = 'dark';
+          body.classList.add('dark');
+          icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.364 17.636l-.707.707M17.636 17.636l.707-.707M6.364 6.364l.707-.707M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>`;
+        } else {
+          state.theme = 'light';
+          body.classList.remove('dark');
+          icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>`;
+        }
+        toggleCreateTypeStyles();
+        toggleEditTypeStyles();
+        updateUI();
+      };
+
+      // --- Ouvinte de Filtro por Mês ---
+      document.getElementById('select-month-filter').addEventListener('change', (e) => {
+        state.selectedMonth = e.target.value;
+        updateUI();
+      });
+
+      // --- Tipo de Despesa Criação ---
+      document.getElementById('btn-type-lunch').addEventListener('click', () => {
+        state.newExpenseType = 'lunch';
+        toggleCreateTypeStyles();
+      });
+      document.getElementById('btn-type-damage').addEventListener('click', () => {
+        state.newExpenseType = 'damage_others';
+        toggleCreateTypeStyles();
+      });
+
+      // --- Tipo de Despesa Edição ---
+      document.getElementById('btn-edit-type-lunch').addEventListener('click', () => {
+        state.editExpenseType = 'lunch';
+        toggleEditTypeStyles();
+      });
+      document.getElementById('btn-edit-type-damage').addEventListener('click', () => {
+        state.editExpenseType = 'damage_others';
+        toggleEditTypeStyles();
+      });
+
+      // --- Vinculação de Cidade ao carregar Técnicos ---
+      document.getElementById('inp-expense-city').addEventListener('change', (e) => {
+        updateTechDropdown(e.target.value, 'inp-expense-tech');
+      });
+      document.getElementById('inp-edit-city').addEventListener('change', (e) => {
+        updateTechDropdown(e.target.value, 'inp-edit-tech');
+      });
+
+      // --- Submissão: Nova Despesa ---
+      document.getElementById('form-new-expense').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const city = document.getElementById('inp-expense-city').value;
+        const techId = document.getElementById('inp-expense-tech').value;
+        const amount = document.getElementById('inp-expense-amount').value;
+        const date = document.getElementById('inp-expense-date').value;
+        const reference = document.getElementById('inp-expense-reference').value;
+
+        if (!techId || !amount || !date) {
+          showMessage('Por favor, preencha todos os campos.', true);
+          return;
+        }
+
+        const techObj = state.techs.find(t => t.id === techId);
+        if (!techObj) return;
+
+        const newExpObj = {
+          id: Date.now().toString(),
+          techId: techObj.id,
+          techName: techObj.name,
+          cityName: techObj.city,
+          date: date,
+          amount: parseFloat(amount),
+          type: state.newExpenseType,
+          reference: state.newExpenseType === 'damage_others' ? reference : ''
+        };
+
+        state.expenses.unshift(newExpObj);
+        
+        // Resetar Formulário
+        document.getElementById('form-new-expense').reset();
+        document.getElementById('inp-expense-tech').disabled = true;
+        state.newExpenseType = 'lunch';
+        toggleCreateTypeStyles();
+
+        // Mudar filtro de mês para o correspondente ao lançado
+        const [year, month] = date.split('-');
+        state.selectedMonth = `${year}-${month}`;
+
+        showMessage('Despesa registada com sucesso!');
+        switchTab('dashboard');
+      });
+
+      // --- Submissão: Novo Técnico ---
+      document.getElementById('form-new-tech').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const city = document.getElementById('inp-newtech-city').value;
+        const name = document.getElementById('inp-newtech-name').value.trim();
+
+        if (!name) {
+          showMessage('Insira um nome completo válido para o técnico.', true);
+          return;
+        }
+
+        const newId = Date.now().toString();
+        state.techs.push({ id: newId, name, city });
+        
+        document.getElementById('inp-newtech-name').value = '';
+        showMessage('Técnico adicionado à equipa com sucesso!');
+        updateUI();
+      });
+
+      // --- Submissão: Editar Despesa ---
+      document.getElementById('form-edit-expense').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const id = document.getElementById('edit-expense-id').value;
+        const date = document.getElementById('inp-edit-date').value;
+        const city = document.getElementById('inp-edit-city').value;
+        const techId = document.getElementById('inp-edit-tech').value;
+        const reference = document.getElementById('inp-edit-reference').value;
+        const amount = document.getElementById('inp-edit-amount').value;
+
+        const techObj = state.techs.find(t => t.id === techId);
+        if (!techObj) return;
+
+        state.expenses = state.expenses.map(exp => {
+          if (exp.id === id) {
+            return {
+              ...exp,
+              date,
+              cityName: city,
+              techId: techObj.id,
+              techName: techObj.name,
+              amount: parseFloat(amount),
+              type: state.editExpenseType,
+              reference: state.editExpenseType === 'damage_others' ? reference : ''
+            };
+          }
+          return exp;
+        });
+
+        // Fechar modal
+        document.getElementById('modal-edit').classList.add('hidden');
+        showMessage('Lançamento atualizado com sucesso!');
+        updateUI();
+      });
+
+      // Cancelar Edição
+      document.getElementById('btn-edit-cancel').addEventListener('click', () => {
+        document.getElementById('modal-edit').classList.add('hidden');
+      });
+
+      // --- GESTÃO DE RESET (REPOSIÇÃO DE DADOS) ---
+      document.getElementById('btn-reset-trigger').addEventListener('click', () => {
+        document.getElementById('modal-reset').classList.remove('hidden');
+      });
+
+      document.getElementById('btn-reset-cancel').addEventListener('click', () => {
+        document.getElementById('modal-reset').classList.add('hidden');
+      });
+
+      document.getElementById('btn-reset-confirm').addEventListener('click', () => {
+        state.expenses = [];
+        state.techs = [...INITIAL_TECHS];
+        state.selectedMonth = 'all';
+        document.getElementById('modal-reset').classList.add('hidden');
+        showMessage('Sistema reiniciado. Todos os lançamentos foram eliminados!');
+        updateUI();
+      });
+
+      // --- EVENTO DE PDF EXPORT ---
+      document.getElementById('btn-export-pdf').addEventListener('click', () => {
+        handlePrintReport();
+      });
+
+    });
+  </script>
+</body>
+</html>

@@ -6,53 +6,20 @@
     <title>Controle de Despesas Regional Ampére</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .transition-theme {
-            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-        }
-        body.dark {
-            background-color: #111827;
-            color: #f9fafb;
-        }
-        body.dark .bg-card-custom {
-            background-color: #1f2937;
-            border-color: #374151;
-        }
-        body.dark input, body.dark select, body.dark textarea {
-            background-color: #374151;
-            color: #f9fafb;
-            border-color: #4b5563;
-        }
-        body.dark .bg-white {
-            background-color: #1f2937 !important;
-            border-color: #374151 !important;
-        }
-        body.dark .bg-gray-50 {
-            background-color: #111827 !important;
-        }
-        body.dark th {
-            background-color: #374151 !important;
-            color: #f9fafb !important;
-        }
-        body.dark tr:hover {
-            background-color: #2d3748 !important;
-        }
+        .transition-theme { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+        body.dark { background-color: #111827; color: #f9fafb; }
+        body.dark .bg-card-custom { background-color: #1f2937; border-color: #374151; }
+        body.dark input, body.dark select, body.dark textarea { background-color: #374151; color: #f9fafb; border-color: #4b5563; }
+        body.dark .bg-white { background-color: #1f2937 !important; border-color: #374151 !important; }
+        body.dark .bg-gray-50 { background-color: #111827 !important; }
+        body.dark th { background-color: #374151 !important; color: #f9fafb !important; }
+        body.dark tr:hover { background-color: #2d3748 !important; }
         
-        /* Configurações de Impressão / PDF */
         @media print {
-            .print\:hidden {
-                display: none !important;
-            }
-            body {
-                background-color: #ffffff !important;
-                color: #000000 !important;
-            }
-            .bg-white {
-                background-color: #ffffff !important;
-                border-color: #e5e7eb !important;
-            }
-            .text-red-600 {
-                color: #b91c1c !important;
-            }
+            .print\:hidden { display: none !important; }
+            body { background-color: #ffffff !important; color: #000000 !important; }
+            .bg-white { background-color: #ffffff !important; border-color: #e5e7eb !important; }
+            .text-red-600 { color: #b91c1c !important; }
         }
     </style>
 </head>
@@ -82,22 +49,24 @@
         <nav class="print:hidden bg-white border-b border-gray-200 shadow">
             <div class="max-w-6xl mx-auto px-4 flex flex-wrap gap-2 py-3">
                 <button id="tab-btn-dashboard" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-md font-medium bg-red-100 text-red-700 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg> Dashboard
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"></path></svg>
+                    Dashboard
                 </button>
                 <button id="tab-btn-add" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Registrar Despesa
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Registrar Despesa
                 </button>
                 <button id="tab-btn-team" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-md font-medium text-gray-600 hover:bg-gray-100 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Cidades e Técnicos
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    Cidades e Técnicos
                 </button>
             </div>
         </nav>
 
         <main class="max-w-6xl mx-auto w-full px-4 py-8 flex-grow">
-            
             <div class="hidden print:block text-center mb-6 border-b pb-4">
                 <h1 class="text-3xl font-bold uppercase tracking-wide text-gray-900">Relatório Geral de Despesas</h1>
-                <p class="text-gray-600">Regional Ampére — Gerado em de 2026</p>
+                <p class="text-gray-600">Regional Ampére — Gerado em 2026</p>
             </div>
 
             <section id="content-dashboard" class="tab-content space-y-6">
@@ -116,7 +85,8 @@
                             <option value="all">Todos os Meses</option>
                         </select>
                         <button id="btn-export-pdf" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> Exportar PDF
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            Exportar PDF
                         </button>
                     </div>
                 </div>
@@ -211,7 +181,6 @@
                         </button>
                     </form>
                 </div>
-
                 <div class="md:col-span-2 bg-white rounded-xl shadow-sm p-6 border">
                     <h2 class="text-2xl font-bold mb-2">Profissionais e Regiões</h2>
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Visualização da equipe técnica distribuída por município.</p>
@@ -222,10 +191,10 @@
                                     <th class="p-3 font-medium">ID</th>
                                     <th class="p-3 font-medium">Nome do Técnico</th>
                                     <th class="p-3 font-medium">Cidade de Atuação</th>
+                                    <th class="p-3 font-medium print:hidden">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-team-body">
-                                </tbody>
+                            <tbody id="table-team-body"></tbody>
                         </table>
                     </div>
                 </div>
@@ -240,16 +209,26 @@
     <script>
         const CITIES = ['Ampére', 'Capanema', 'Capitão', 'Dois Vizinhos', 'Realeza'];
         const INITIAL_TECHS = [
-            { id: '1', name: 'Ederson', city: 'Ampére' }, { id: '2', name: 'Diego', city: 'Ampére' },
-            { id: '3', name: 'Marcos', city: 'Ampére' }, { id: '4', name: 'Valdenor', city: 'Ampére' },
-            { id: '5', name: 'Wellinton', city: 'Ampére' }, { id: '6', name: 'Mateus', city: 'Ampére' },
-            { id: '7', name: 'Guilherme', city: 'Ampére' }, { id: '8', name: 'Vinicios', city: 'Capanema' },
-            { id: '9', name: 'Odair', city: 'Capanema' }, { id: '10', name: 'Rodrigo', city: 'Capitão' },
-            { id: '11', name: 'Renan', city: 'Capitão' }, { id: '12', name: 'Marcio', city: 'Dois Vizinhos' },
-            { id: '13', name: 'Samuel', city: 'Dois Vizinhos' }, { id: '14', name: 'Edson', city: 'Dois Vizinhos' },
-            { id: '15', name: 'Cleverson', city: 'Dois Vizinhos' }, { id: '16', name: 'Renan', city: 'Dois Vizinhos' },
-            { id: '17', name: 'Alessandro', city: 'Realeza' }, { id: '18', name: 'Kauan', city: 'Realeza' },
-            { id: '19', name: 'Serginho', city: 'Realeza' }, { id: '20', name: 'Tiago', city: 'Realeza' }
+            { id: '1', name: 'Ederson', city: 'Ampére' },
+            { id: '2', name: 'Diego', city: 'Ampére' },
+            { id: '3', name: 'Marcos', city: 'Ampére' },
+            { id: '4', name: 'Valdenor', city: 'Ampére' },
+            { id: '5', name: 'Wellinton', city: 'Ampére' },
+            { id: '6', name: 'Mateus', city: 'Ampére' },
+            { id: '7', name: 'Guilherme', city: 'Ampére' },
+            { id: '8', name: 'Vinicios', city: 'Capanema' },
+            { id: '9', name: 'Odair', city: 'Capanema' },
+            { id: '10', name: 'Rodrigo', city: 'Capitão' },
+            { id: '11', name: 'Renan', city: 'Capitão' },
+            { id: '12', name: 'Marcio', city: 'Dois Vizinhos' },
+            { id: '13', name: 'Samuel', city: 'Dois Vizinhos' },
+            { id: '14', name: 'Edson', city: 'Dois Vizinhos' },
+            { id: '15', name: 'Cleverson', city: 'Dois Vizinhos' },
+            { id: '16', name: 'Renan', city: 'Dois Vizinhos' },
+            { id: '17', name: 'Alessandro', city: 'Realeza' },
+            { id: '18', name: 'Kauan', city: 'Realeza' },
+            { id: '19', name: 'Serginho', city: 'Realeza' },
+            { id: '20', name: 'Tiago', city: 'Realeza' }
         ];
 
         let state = {
@@ -260,17 +239,11 @@
             newExpenseType: 'lunch'
         };
 
-        // Ícones SVG corretos (Lua para Tema Claro -> Mudar para Escuro / Sol para Tema Escuro -> Mudar para Claro)
         const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75zM6.16 4.56a.75.75 0 0 1 1.06 0l1.59 1.59a.75.75 0 1 1-1.06 1.06L6.16 5.62a.75.75 0 0 1 0-1.06zm11.68 0a.75.75 0 0 1 0 1.06l-1.59 1.59a.75.75 0 1 1-1.06-1.06l1.59-1.59a.75.75 0 0 1 1.06 0zM3 12a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12zm15 0a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 0 1.5h-2.25A.75.75 0 0 1 18 12zM6.16 19.44a.75.75 0 0 1 0-1.06l1.59-1.59a.75.75 0 1 1 1.06 1.06l-1.59 1.59a.75.75 0 0 1-1.06 0zm11.68 0a.75.75 0 0 1-1.06 0l-1.59-1.59a.75.75 0 1 1 1.06-1.06l1.59 1.59a.75.75 0 0 1 0 1.06zM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18zM12 7.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z"/></svg>`;
         const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-200" fill="currentColor" viewBox="0 0 24 24"><path d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 1 1-16.915-11.97.75.75 0 0 1 .818-.162z"/></svg>`;
 
         const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-        
-        const formatDate = (dateString) => {
-            if (!dateString) return '';
-            const [year, month, day] = dateString.split('-');
-            return `${day}/${month}/${year}`;
-        };
+        const formatDate = (dateString) => { if (!dateString) return ''; const [year, month, day] = dateString.split('-'); return `${day}/${month}/${year}`; };
 
         const loadState = () => {
             const saved = localStorage.getItem('expenseSystemState');
@@ -292,10 +265,10 @@
             const container = document.getElementById('icon-theme-container');
             if (theme === 'dark') {
                 document.body.classList.add('dark');
-                container.innerHTML = sunIcon; // Mostra o Sol no escuro para voltar ao claro
+                container.innerHTML = sunIcon;
             } else {
                 document.body.classList.remove('dark');
-                container.innerHTML = moonIcon; // Mostra a Lua no claro para ir para o escuro
+                container.innerHTML = moonIcon;
             }
             localStorage.setItem('expenseTheme', theme);
         };
@@ -306,7 +279,6 @@
                 btn.classList.remove('bg-red-100', 'text-red-700');
                 btn.classList.add('text-gray-600', 'hover:bg-gray-100');
             });
-
             if (tabId === 'dashboard') {
                 document.getElementById('content-dashboard').classList.remove('hidden');
                 document.getElementById('tab-btn-dashboard').classList.add('bg-red-100', 'text-red-700');
@@ -327,13 +299,13 @@
                     <td class="p-3 text-gray-500">${t.id}</td>
                     <td class="p-3 font-semibold text-gray-900 dark:text-gray-100">${t.name}</td>
                     <td class="p-3"><span class="px-2 py-1 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-bold">${t.city}</span></td>
+                    <td class="p-3 print:hidden"><button onclick="deleteTech('${t.id}')" class="text-red-600 hover:underline">Deletar</button></td>
                 </tr>
             `).join('');
         };
 
         const updateUI = () => {
             const filtered = state.selectedMonth === 'all' ? state.expenses : state.expenses.filter(e => e.date && e.date.startsWith(state.selectedMonth));
-            
             const totalExpense = filtered.reduce((acc, curr) => acc + curr.amount, 0);
             const lunchExpenses = filtered.filter(e => e.type === 'lunch');
             const totalLunch = lunchExpenses.reduce((acc, curr) => acc + curr.amount, 0);
@@ -374,39 +346,40 @@
             updateUI();
         };
 
-        // Event Listeners das Abas
+        window.deleteTech = (id) => {
+            if (confirm('Deseja realmente excluir este técnico?')) {
+                state.techs = state.techs.filter(t => t.id !== id);
+                saveState();
+                renderTeamTable();
+            }
+        };
+
         document.getElementById('tab-btn-dashboard').addEventListener('click', () => switchTab('dashboard'));
         document.getElementById('tab-btn-add').addEventListener('click', () => switchTab('add'));
         document.getElementById('tab-btn-team').addEventListener('click', () => switchTab('team'));
 
-        // Event Listener do Tema Escuro
         document.getElementById('btn-theme-toggle').addEventListener('click', () => {
             setTheme(state.theme === 'light' ? 'dark' : 'light');
         });
 
-        // Evento de Exportação para PDF (Impressão de Sistema Otimizada)
         document.getElementById('btn-export-pdf').addEventListener('click', () => {
             window.print();
         });
 
-        // Eventos do Formulário de Cadastro de Técnico
         document.getElementById('form-new-tech').addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('inp-tech-name').value.trim();
             const city = document.getElementById('inp-tech-city').value;
-
             if (!name || !city) return;
 
             const newId = (state.techs.length + 1).toString();
             state.techs.push({ id: newId, name, city });
-            
             saveState();
             renderTeamTable();
             document.getElementById('form-new-tech').reset();
             alert(`Técnico ${name} cadastrado com sucesso para a região de ${city}!`);
         });
 
-        // Eventos do Formulário de Despesas
         document.getElementById('btn-type-lunch').addEventListener('click', (e) => {
             e.preventDefault();
             state.newExpenseType = 'lunch';
@@ -440,12 +413,18 @@
             const city = document.getElementById('inp-expense-city').value;
             const techId = document.getElementById('inp-expense-tech').value;
             const amount = parseFloat(document.getElementById('inp-expense-amount').value);
-            
             if (!date || !city || !techId || !amount) return;
 
             const tech = state.techs.find(t => t.id === techId);
-            const expense = { id: Date.now().toString(), date, cityName: city, techId, techName: tech.name, type: state.newExpenseType, amount };
-            
+            const expense = {
+                id: Date.now().toString(),
+                date,
+                cityName: city,
+                techId,
+                techName: tech.name,
+                type: state.newExpenseType,
+                amount
+            };
             state.expenses.push(expense);
             saveState();
             document.getElementById('form-new-expense').reset();
@@ -462,7 +441,6 @@
             }
         });
 
-        // Inicialização
         loadState();
         updateDropdowns();
         updateUI();

@@ -4,109 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Despesas Regional Ampére</title>
+    <!-- Tailwind CSS para Estilização -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para o Gráfico de Despesas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SheetJS e jsPDF para exportações -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        dark: {
-                            bg: '#111827',
-                            card: '#1F2937',
-                            border: '#374151',
-                            text: '#F3F4F6',
-                            muted: '#9CA3AF'
-                        }
+                        darkBg: '#0f172a',
+                        cardBg: '#1e293b',
+                        cardBorder: '#334155'
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-gray-100 dark:bg-dark-bg text-gray-800 dark:text-dark-text min-h-screen transition-colors duration-200">
+<body class="bg-darkBg text-slate-100 min-h-screen font-sans transition-colors duration-200">
 
-    <!-- Header -->
-    <header class="bg-white dark:bg-dark-card shadow-sm border-b border-gray-200 dark:border-dark-border">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <!-- Container Principal -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        
+        <!-- Cabeçalho -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-cardBorder gap-4">
             <div class="flex items-center space-x-3">
-                <div class="bg-red-600 text-white p-2.5 rounded-lg shadow-md">
-                    <i class="fa-solid fa-clipboard-list text-xl"></i>
+                <div class="bg-red-600 p-3 rounded-lg text-white shadow-lg">
+                    <i class="fa-solid fa-receipt text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight">CONTROLE DE DESPESAS REGIONAL AMPÉRE</h1>
-                    <p class="text-xs text-gray-500 dark:text-dark-muted">Gestão de almoços e despesas da equipe técnica</p>
+                    <h1 class="text-2xl font-bold tracking-tight">CONTROLE DE DESPESAS REGIONAL AMPÉRE</h1>
+                    <p class="text-sm text-slate-400">Gestão de almoços e despesas da equipe técnica</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-3">
-                <button onclick="toggleDarkMode()" class="p-2.5 rounded-lg bg-gray-100 dark:bg-dark-border text-gray-600 dark:text-yellow-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Alternar Tema">
-                    <i id="themeIcon" class="fa-solid fa-sun"></i>
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
+                <button onclick="toggleDarkMode()" class="bg-cardBg border border-cardBorder p-2.5 rounded-lg text-slate-300 hover:text-white transition" title="Alternar Tema">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+                <button onclick="abrirModalDespesa()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg font-medium shadow-lg transition flex items-center space-x-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Registrar Despesa</span>
                 </button>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-
-        <!-- Action Bar & Filter -->
-        <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-white dark:bg-dark-card p-4 rounded-xl shadow-sm border border-gray-200 dark:border-dark-border">
-            <div class="flex flex-wrap items-center gap-3">
-                <button onclick="openModal()" class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
-                    <i class="fa-solid fa-plus"></i> Registrar Despesa
-                </button>
+        <!-- Barra de Filtros e Período -->
+        <div class="flex flex-col sm:flex-row justify-between items-center bg-cardBg border border-cardBorder p-4 rounded-xl mb-6 gap-4">
+            <div class="flex items-center space-x-3 w-full sm:w-auto">
+                <i class="fa-regular fa-calendar-days text-red-500 text-lg"></i>
+                <span class="text-sm font-semibold uppercase tracking-wider text-slate-300">Período:</span>
+                <select id="filtroPeriodo" onchange="mudarPeriodo()" class="bg-slate-900 border border-cardBorder text-slate-200 text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500 transition">
+                    <option value="todos">Todos os Meses</option>
+                </select>
             </div>
 
-            <div class="flex flex-wrap items-center gap-3">
-                <div class="flex items-center gap-2 bg-gray-50 dark:bg-dark-border px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <i class="fa-regular fa-calendar text-gray-500 dark:text-dark-muted"></i>
-                    <span class="text-xs font-semibold text-gray-500 dark:text-dark-muted uppercase">Período:</span>
-                    <select id="filtroMes" onchange="filtrarPorMes()" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
-                        <option value="todos">Todos os Meses</option>
-                        <option value="2026-06" selected>Junho / 2026</option>
-                        <option value="2026-07">Julho / 2026</option>
-                    </select>
-                </div>
-
-                <button onclick="exportarPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2.5 rounded-lg shadow transition flex items-center gap-2">
-                    <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+            <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
+                <button onclick="exportarPDF()" class="bg-slate-800 hover:bg-slate-700 border border-cardBorder text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center space-x-2">
+                    <i class="fa-solid fa-file-pdf text-red-400"></i>
+                    <span>Exportar PDF</span>
                 </button>
             </div>
         </div>
 
-        <!-- Cards Totais -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white dark:bg-dark-card p-5 rounded-xl shadow-sm border border-gray-200 dark:border-dark-border">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Despesa Total</p>
-                <h3 id="cardTotal" class="text-2xl font-extrabold text-red-600 mt-1">R$ 0,00</h3>
+        <!-- Cards de Resumo -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Despesa Total</p>
+                <h2 id="cardTotal" class="text-2xl font-bold text-red-500">R$ 0,00</h2>
             </div>
-            <div class="bg-white dark:bg-dark-card p-5 rounded-xl shadow-sm border border-gray-200 dark:border-dark-border">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Média por Almoço</p>
-                <h3 id="cardMediaAlmoco" class="text-2xl font-extrabold mt-1">R$ 0,00</h3>
+            <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Média por Almoço</p>
+                <h2 id="cardMedia" class="text-2xl font-bold text-slate-100">R$ 0,00</h2>
             </div>
-            <div class="bg-white dark:bg-dark-card p-5 rounded-xl shadow-sm border border-gray-200 dark:border-dark-border">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Danos e Outros</p>
-                <h3 id="cardDanosOutros" class="text-2xl font-extrabold mt-1">R$ 0,00</h3>
+            <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Danos e Outros</p>
+                <h2 id="cardDanos" class="text-2xl font-bold text-amber-500">R$ 0,00</h2>
             </div>
-            <div class="bg-white dark:bg-dark-card p-5 rounded-xl shadow-sm border border-gray-200 dark:border-dark-border">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Lançamentos</p>
-                <h3 id="cardLancamentos" class="text-2xl font-extrabold mt-1">0</h3>
+            <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Lançamentos</p>
+                <h2 id="cardLancamentos" class="text-2xl font-bold text-slate-100">0</h2>
             </div>
         </div>
 
-        <!-- Tabela Detalhamento -->
-        <div class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-200 dark:border-dark-border overflow-hidden">
-            <div class="p-4 border-b border-gray-200 dark:border-dark-border">
-                <h3 class="font-bold text-base">Detalhamento das Despesas</h3>
+        <!-- Gráfico de Despesas por Mês -->
+        <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm mb-6">
+            <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4"><i class="fa-solid fa-chart-column text-red-500 mr-2"></i>Evolução de Despesas por Mês</h3>
+            <div class="relative h-48 w-full">
+                <canvas id="graficoMeses"></canvas>
+            </div>
+        </div>
+
+        <!-- Tabela de Detalhamento -->
+        <div class="bg-cardBg border border-cardBorder rounded-xl shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-cardBorder flex justify-between items-center">
+                <h3 class="font-semibold text-base">Detalhamento das Despesas</h3>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-sm">
+                <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-50 dark:bg-dark-border text-gray-500 dark:text-dark-muted uppercase text-xs tracking-wider">
+                        <tr class="border-b border-cardBorder text-xs text-slate-400 uppercase bg-slate-900/50">
                             <th class="p-4 font-semibold">Data</th>
                             <th class="p-4 font-semibold">Técnico</th>
                             <th class="p-4 font-semibold">Cidade</th>
@@ -115,281 +119,324 @@
                             <th class="p-4 font-semibold text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaDespesas" class="divide-y divide-gray-200 dark:divide-dark-border">
-                        <!-- Inserido via JS -->
+                    <tbody id="tabelaDespesas" class="divide-y divide-cardBorder text-sm">
+                        <!-- Inserido dinamicamente via JS -->
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
 
-    </main>
-
-    <!-- Modal Registrar / Editar Despesa -->
-    <div id="modalDespesa" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white dark:bg-dark-card w-full max-w-lg rounded-2xl shadow-xl border border-gray-200 dark:border-dark-border overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-dark-border flex justify-between items-center">
+    <!-- Modal de Cadastro / Edição -->
+    <div id="modalDespesa" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-cardBg border border-cardBorder w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex justify-between items-center p-5 border-b border-cardBorder">
                 <h3 id="modalTitulo" class="font-bold text-lg">Registrar Nova Despesa</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-lg">
+                <button onclick="fecharModalDespesa()" class="text-slate-400 hover:text-white transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <form id="formDespesa" onsubmit="salvarDespesa(event)" class="p-6 space-y-4">
-                <input type="hidden" id="editIndex" value="">
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase mb-1 text-gray-500 dark:text-dark-muted">Data</label>
-                        <input type="date" id="data" required class="w-full bg-gray-50 dark:bg-dark-border border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase mb-1 text-gray-500 dark:text-dark-muted">Técnico</label>
-                        <input type="text" id="tecnico" placeholder="Nome do técnico" required class="w-full bg-gray-50 dark:bg-dark-border border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase mb-1 text-gray-500 dark:text-dark-muted">Cidade</label>
-                        <input type="text" id="cidade" placeholder="Ex: Capitão, Realeza..." required class="w-full bg-gray-50 dark:bg-dark-border border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase mb-1 text-gray-500 dark:text-dark-muted">Tipo</label>
-                        <select id="tipo" onchange="tratarTipoDespesa()" class="w-full bg-gray-50 dark:bg-dark-border border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500 cursor-pointer">
-                            <option value="Almoço">Almoço</option>
-                            <option value="Danos Residenciais">Danos Residenciais</option>
-                            <option value="Outros">Outros</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Nova aba abaixo para especificar se for Outros -->
-                <div id="containerEspecificarOutros" class="hidden">
-                    <label class="block text-xs font-semibold uppercase mb-1 text-gray-500 dark:text-dark-muted">Especificar Despesa (Outros)</label>
-                    <input type="text" id="especificarOutros" placeholder="Descreva o motivo da despesa" class="w-full bg-gray-50 dark:bg-dark-border border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500">
-                </div>
-
+            <form id="formDespesa" onsubmit="salvarDespesa(event)" class="p-5 space-y-4">
+                <input type="hidden" id="despesaId">
                 <div>
-                    <label class="block text-xs font-semibold uppercase mb-1 text-gray-500 dark:text-dark-muted">Valor (R$)</label>
-                    <input type="number" step="0.01" id="valor" placeholder="0,00" required class="w-full bg-gray-50 dark:bg-dark-border border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-500">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Data</label>
+                    <input type="date" id="inputData" required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
                 </div>
-
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-dark-border">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-dark-border text-sm font-medium transition">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium shadow transition">Salvar</button>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Técnico</label>
+                    <input type="text" id="inputTecnico" placeholder="Nome do técnico" required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Cidade</label>
+                    <input type="text" id="inputCidade" placeholder="Ex: Ampére, Realeza..." required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Tipo de Despesa</label>
+                    <select id="inputTipo" class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
+                        <option value="Almoço">Almoço</option>
+                        <option value="Danos Residenciais">Danos Residenciais</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Valor (R$)</label>
+                    <input type="number" step="0.01" id="inputValor" placeholder="0,00" required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="fecharModalDespesa()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-sm font-medium transition">Cancelar</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition shadow-lg">Salvar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Script de Gestão -->
+    <!-- Script de Funcionalidades -->
     <script>
-        let despesas = [
-            { data: '2026-06-25', tecnico: 'Rodrigo', cidade: 'Capitão', tipo: 'Outros', detalheOutros: 'Outros', valor: 6.60 },
-            { data: '2026-06-23', tecnico: 'Kuan', cidade: 'Realeza', tipo: 'Almoço', detalheOutros: '', valor: 60.00 },
-            { data: '2026-06-23', tecnico: 'Alessandro', cidade: 'Realeza', tipo: 'Almoço', detalheOutros: '', valor: 60.00 },
-            { data: '2026-06-24', tecnico: 'Sulivan', cidade: 'Realeza', tipo: 'Almoço', detalheOutros: '', valor: 43.00 },
-            { data: '2026-06-23', tecnico: 'Rodrigo', cidade: 'Capitão', tipo: 'Almoço', detalheOutros: '', valor: 55.00 },
-            { data: '2026-06-23', tecnico: 'Renan Fagundes', cidade: 'Capitão', tipo: 'Almoço', detalheOutros: '', valor: 55.00 },
-            { data: '2026-06-26', tecnico: 'Cleverson', cidade: 'Dois Vizinhos', tipo: 'Almoço', detalheOutros: '', valor: 45.00 },
-            { data: '2026-06-26', tecnico: 'Renan Tartari', cidade: 'Dois Vizinhos', tipo: 'Almoço', detalheOutros: '', valor: 45.00 },
-            { data: '2026-06-30', tecnico: 'Rodrigo', cidade: 'Capitão', tipo: 'Almoço', detalheOutros: '', valor: 60.00 },
-            { data: '2026-06-30', tecnico: 'Renan Fagundes', cidade: 'Capitão', tipo: 'Almoço', detalheOutros: '', valor: 60.00 }
+        // Array Inicial de Dados (incluindo o mês atual atualizado para Agosto/2026 e históricos)
+        let despesas = JSON.parse(localStorage.getItem('despesas_regional')) || [
+            { id: 1, data: '2026-08-04', tecnico: 'Sulivan', cidade: 'Ampére', tipo: 'Almoço', valor: 45.00 },
+            { id: 2, data: '2026-08-05', tecnico: 'Kuan', cidade: 'Realeza', tipo: 'Almoço', valor: 55.00 },
+            { id: 3, data: '2026-08-06', tecnico: 'Rodrigo', cidade: 'Capitão', tipo: 'Almoço', valor: 50.00 },
+            { id: 4, data: '2026-06-25', tecnico: 'Rodrigo', cidade: 'Capitão', tipo: 'Danos Residenciais', valor: 6.60 },
+            { id: 5, data: '2026-06-23', tecnico: 'Kuan', cidade: 'Realeza', tipo: 'Almoço', valor: 60.00 },
+            { id: 6, data: '2026-06-23', tecnico: 'Alessandro', cidade: 'Realeza', tipo: 'Almoço', valor: 60.00 }
         ];
 
-        // Carregar dados salvos se houver
-        if (localStorage.getItem('despesas_ampere')) {
-            despesas = JSON.parse(localStorage.getItem('despesas_ampere'));
+        let chartInstance = null;
+        const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+        // Inicialização do Sistema
+        document.addEventListener('DOMContentLoaded', () => {
+            popularFiltrosPeriodo();
+            renderizarApp();
+        });
+
+        function obterChaveMesAno(dataStr) {
+            const [ano, mes] = dataStr.split('-');
+            return `${mes}/${ano}`;
         }
 
-        function salvarLocalStorage() {
-            localStorage.setItem('despesas_ampere', JSON.stringify(despesas));
+        function formatarPeriodoLabel(chaveMesAno) {
+            const [mes, ano] = chaveMesAno.split('/');
+            return `${nomesMeses[parseInt(mes) - 1]} / ${ano}`;
         }
 
-        function formatarMoeda(valor) {
-            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-
-        function formatarData(dataStr) {
-            if (!dataStr) return '';
-            const partes = dataStr.split('-');
-            if (partes.length === 3) {
-                return `${partes[2]}/${partes[1]}/${partes[0]}`;
-            }
-            return dataStr;
-        }
-
-        function tratarTipoDespesa() {
-            const tipo = document.getElementById('tipo').value;
-            const container = document.getElementById('containerEspecificarOutros');
-            const inputOutros = document.getElementById('especificarOutros');
-
-            if (tipo === 'Outros') {
-                container.classList.remove('hidden');
-                inputOutros.required = true;
-            } else {
-                container.classList.add('hidden');
-                inputOutros.required = false;
-                inputOutros.value = '';
-            }
-        }
-
-        function renderizar() {
-            const filtroMes = document.getElementById('filtroMes').value;
-            const tbody = document.getElementById('tabelaDespesas');
-            tbody.innerHTML = '';
-
-            let totalGeral = 0;
-            let somaAlmoco = 0;
-            let qtdAlmoco = 0;
-            let somaDanosOutros = 0;
-            let countLancamentos = 0;
-
-            despesas.forEach((item, index) => {
-                const mesItem = item.data.substring(0, 7); // yyyy-MM
-                if (filtroMes !== 'todos' && mesItem !== filtroMes) {
-                    return;
-                }
-
-                countLancamentos++;
-                totalGeral += item.valor;
-
-                if (item.tipo === 'Almoço') {
-                    somaAlmoco += item.valor;
-                    qtdAlmoco++;
-                } else {
-                    somaDanosOutros += item.valor;
-                }
-
-                let tipoTexto = item.tipo;
-                if (item.tipo === 'Outros' && item.detalheOutros) {
-                    tipoTexto = `Outros (${item.detalheOutros})`;
-                }
-
-                let badgeColor = 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
-                if (item.tipo === 'Danos Residenciais') {
-                    badgeColor = 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
-                } else if (item.tipo === 'Outros') {
-                    badgeColor = 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300';
-                }
-
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-gray-50/50 dark:hover:bg-dark-border/40 transition';
-                tr.innerHTML = `
-                    <td class="p-4 font-medium">${formatarData(item.data)}</td>
-                    <td class="p-4">${item.tecnico}</td>
-                    <td class="p-4">${item.cidade}</td>
-                    <td class="p-4"><span class="px-2.5 py-1 rounded-md text-xs font-semibold ${badgeColor}">${tipoTexto}</span></td>
-                    <td class="p-4 font-semibold">${formatarMoeda(item.valor)}</td>
-                    <td class="p-4 text-center space-x-3">
-                        <button onclick="editarDespesa(${index})" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium transition text-xs">Editar</button>
-                        <button onclick="deletarDespesa(${index})" class="text-red-600 hover:text-red-800 dark:text-red-400 font-medium transition text-xs">Deletar</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+        function popularFiltrosPeriodo() {
+            const select = document.getElementById('filtroPeriodo');
+            
+            // Descobrir meses disponíveis
+            const mesesSet = new Set();
+            despesas.forEach(d => {
+                if(d.data) mesesSet.add(obterChaveMesAno(d.data));
             });
 
-            const mediaAlmoco = qtdAlmoco > 0 ? somaAlmoco / qtdAlmoco : 0;
+            // Adicionar mês atual caso não esteja na lista
+            const agora = new Date();
+            const mesAtualChave = String(agora.getMonth() + 1).padStart(2, '0') + '/' + agora.getFullYear();
+            mesesSet.add(mesAtualChave);
 
-            document.getElementById('cardTotal').innerText = formatarMoeda(totalGeral);
-            document.getElementById('cardMediaAlmoco').innerText = formatarMoeda(mediaAlmoco);
-            document.getElementById('cardDanosOutros').innerText = formatarMoeda(somaDanosOutros);
-            document.getElementById('cardLancamentos').innerText = countLancamentos;
+            // Ordenar decrescente
+            const mesesOrdenados = Array.from(mesesSet).sort().reverse();
+
+            let optionsHtml = '<option value="todos">Todos os Meses</option>';
+            mesesOrdenados.forEach(m => {
+                optionsHtml += `<option value="${m}">${formatarPeriodoLabel(m)}</option>`;
+            });
+            select.innerHTML = optionsHtml;
+
+            // Selecionar mês atual por padrão se existir nas opções
+            if(mesesSet.has(mesAtualChave)) {
+                select.value = mesAtualChave;
+            }
         }
 
-        function filtrarPorMes() {
-            renderizar();
+        function renderizarApp() {
+            const periodoSelecionado = document.getElementById('filtroPeriodo').value;
+            
+            // Filtrar dados
+            const despesasFiltradas = despesas.filter(d => {
+                if(periodoSelecionado === 'todos') return true;
+                return obterChaveMesAno(d.data) === periodoSelecionado;
+            });
+
+            // Ordenar por data decrescente
+            despesasFiltradas.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+            // Atualizar Cards
+            let totalGeral = 0;
+            let totalAlmoco = 0;
+            let qtdAlmoco = 0;
+            let totalDanos = 0;
+
+            despesasFiltradas.forEach(d => {
+                totalGeral += d.valor;
+                if(d.tipo === 'Almoço') {
+                    totalAlmoco += d.valor;
+                    qtdAlmoco++;
+                } else {
+                    totalDanos += d.valor;
+                }
+            });
+
+            const mediaAlmoco = qtdAlmoco > 0 ? totalAlmoco / qtdAlmoco : 0;
+
+            document.getElementById('cardTotal').innerText = `R$ ${totalGeral.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('cardMedia').innerText = `R$ ${mediaAlmoco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('cardDanos').innerText = `R$ ${totalDanos.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('cardLancamentos').innerText = despesasFiltradas.length;
+
+            // Renderizar Tabela
+            const tbody = document.getElementById('tabelaDespesas');
+            if(despesasFiltradas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">Nenhuma despesa encontrada para este período.</td></tr>`;
+            } else {
+                tbody.innerHTML = despesasFiltradas.map(d => {
+                    const dataFormatada = d.data.split('-').reverse().join('/');
+                    const tipoBadge = d.tipo === 'Almoço' ? 'bg-blue-900/40 text-blue-400 border border-blue-800' : 'bg-amber-950/40 text-amber-400 border border-amber-800';
+                    return `
+                        <tr class="hover:bg-slate-800/50 transition">
+                            <td class="p-4 font-medium">${dataFormatada}</td>
+                            <td class="p-4">${d.tecnico}</td>
+                            <td class="p-4">${d.cidade}</td>
+                            <td class="p-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${tipoBadge}">${d.tipo}</span></td>
+                            <td class="p-4 font-semibold text-slate-200">R$ ${d.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                            <td class="p-4 text-center space-x-2">
+                                <button onclick="editarDespesa(${d.id})" class="text-blue-400 hover:text-blue-300 text-xs font-medium px-2 py-1 bg-blue-950/50 rounded transition">Editar</button>
+                                <button onclick="deletarDespesa(${d.id})" class="text-red-400 hover:text-red-300 text-xs font-medium px-2 py-1 bg-red-950/50 rounded transition">Deletar</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            atualizarGrafico();
+            localStorage.setItem('despesas_regional', JSON.stringify(despesas));
         }
 
-        function openModal() {
-            document.getElementById('modalTitulo').innerText = 'Registrar Nova Despesa';
-            document.getElementById('editIndex').value = '';
-            document.getElementById('formDespesa').reset();
-            document.getElementById('containerEspecificarOutros').classList.add('hidden');
+        function atualizarGrafico() {
+            // Agrupar totais por mês/ano
+            const totaisPorMes = {};
+            despesas.forEach(d => {
+                const chave = obterChaveMesAno(d.data);
+                totaisPorMes[chave] = (totaisPorMes[chave] || 0) + d.valor;
+            });
+
+            // Ordenar cronologicamente
+            const chavesOrdenadas = Object.keys(totaisPorMes).sort((a, b) => {
+                const [mA, aA] = a.split('/');
+                const [mB, aB] = b.split('/');
+                return new Date(`${aA}-${mA}-01`) - new Date(`${aB}-${mB}-01`);
+            });
+
+            const labels = chavesOrdenadas.map(c => formatarPeriodoLabel(c));
+            const dados = chavesOrdenadas.map(c => totaisPorMes[c]);
+
+            const ctx = document.getElementById('graficoMeses').getContext('2d');
+            if(chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Despesas (R$)',
+                        data: dados,
+                        backgroundColor: '#dc2626',
+                        borderRadius: 6,
+                        barThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' R$ ' + context.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 11 } }
+                        },
+                        y: {
+                            grid: { color: '#334155' },
+                            ticks: { 
+                                color: '#94a3b8', 
+                                font: { size: 11 },
+                                callback: function(value) { return 'R$ ' + value; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function mudarPeriodo() {
+            renderizarApp();
+        }
+
+        function abrirModalDespesa() {
             document.getElementById('modalDespesa').classList.remove('hidden');
             document.getElementById('modalDespesa').classList.add('flex');
+            document.getElementById('modalTitulo').innerText = 'Registrar Nova Despesa';
+            document.getElementById('formDespesa').reset();
+            document.getElementById('despesaId').value = '';
             
-            // Definir data padrão de hoje se vazio
+            // Definir data padrão como hoje
             const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('data').value = hoje;
+            document.getElementById('inputData').value = hoje;
         }
 
-        function closeModal() {
+        function fecharModalDespesa() {
             document.getElementById('modalDespesa').classList.remove('flex');
             document.getElementById('modalDespesa').classList.add('hidden');
         }
 
-        function editarDespesa(index) {
-            const item = despesas[index];
-            document.getElementById('modalTitulo').innerText = 'Editar Despesa';
-            document.getElementById('editIndex').value = index;
-            document.getElementById('data').value = item.data;
-            document.getElementById('tecnico').value = item.tecnico;
-            document.getElementById('cidade').value = item.cidade;
-            document.getElementById('tipo').value = item.tipo;
-            
-            tratarTipoDespesa();
-            if (item.tipo === 'Outros') {
-                document.getElementById('especificarOutros').value = item.detalheOutros || '';
-            }
-
-            document.getElementById('valor').value = item.valor;
-
-            document.getElementById('modalDespesa').classList.remove('hidden');
-            document.getElementById('modalDespesa').classList.add('flex');
-        }
-
         function salvarDespesa(event) {
             event.preventDefault();
-            const index = document.getElementById('editIndex').value;
-            const tipo = document.getElementById('tipo').value;
-            const detalheOutros = tipo === 'Outros' ? document.getElementById('especificarOutros').value : '';
+            const id = document.getElementById('despesaId').value;
+            const data = document.getElementById('inputData').value;
+            const tecnico = document.getElementById('inputTecnico').value;
+            const cidade = document.getElementById('inputCidade').value;
+            const tipo = document.getElementById('inputTipo').value;
+            const valor = parseFloat(document.getElementById('inputValor').value);
 
-            const novaDespesa = {
-                data: document.getElementById('data').value,
-                tecnico: document.getElementById('tecnico').value,
-                cidade: document.getElementById('cidade').value,
-                tipo: tipo,
-                detalheOutros: detalheOutros,
-                valor: parseFloat(document.getElementById('valor').value)
-            };
-
-            if (index === '') {
-                despesas.unshift(novaDespesa);
+            if(id) {
+                // Editar
+                const index = despesas.findIndex(d => d.id == id);
+                if(index !== -1) {
+                    despesas[index] = { id: parseInt(id), data, tecnico, cidade, tipo, valor };
+                }
             } else {
-                despesas[index] = novaDespesa;
+                // Criar
+                const novoId = despesas.length > 0 ? Math.max(...despesas.map(d => d.id)) + 1 : 1;
+                despesas.push({ id: novoId, data, tecnico, cidade, tipo, valor });
             }
 
-            salvarLocalStorage();
-            closeModal();
-            renderizar();
+            fecharModalDespesa();
+            popularFiltrosPeriodo();
+            renderizarApp();
         }
 
-        function deletarDespesa(index) {
-            if (confirm('Deseja realmente excluir esta despesa?')) {
-                despesas.splice(index, 1);
-                salvarLocalStorage();
-                renderizar();
+        function editarDespesa(id) {
+            const d = despesas.find(item => item.id === id);
+            if(!d) return;
+
+            abrirModalDespesa();
+            document.getElementById('modalTitulo').innerText = 'Editar Despesa';
+            document.getElementById('despesaId').value = d.id;
+            document.getElementById('inputData').value = d.data;
+            document.getElementById('inputTecnico').value = d.tecnico;
+            document.getElementById('inputCidade').value = d.cidade;
+            document.getElementById('inputTipo').value = d.tipo;
+            document.getElementById('inputValor').value = d.valor;
+        }
+
+        function deletarDespesa(id) {
+            if(confirm('Tem certeza que deseja excluir esta despesa?')) {
+                despesas = despesas.filter(d => d.id !== id);
+                popularFiltrosPeriodo();
+                renderizarApp();
             }
         }
 
         function toggleDarkMode() {
             const html = document.documentElement;
+            html.classList.toggle('dark');
             const icon = document.getElementById('themeIcon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                icon.className = 'fa-solid fa-sun';
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
+            if(html.classList.contains('dark')) {
                 icon.className = 'fa-solid fa-moon';
-                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.className = 'fa-solid fa-sun';
             }
-        }
-
-        // Inicializar Tema e Renderização
-        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            document.getElementById('themeIcon').className = 'fa-solid fa-moon';
         }
 
         function exportarPDF() {
@@ -397,38 +444,35 @@
             const doc = new jsPDF();
             
             doc.setFontSize(16);
-            doc.text("Controle de Despesas Regional Ampére", 14, 20);
+            doc.text("Controle de Despesas - Regional Ampére", 14, 20);
             
-            doc.setFontSize(10);
-            doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 28);
+            const periodo = document.getElementById('filtroPeriodo').value;
+            doc.setFontSize(11);
+            doc.text(`Período: ${periodo === 'todos' ? 'Todos os Meses' : formatarPeriodoLabel(periodo)}`, 14, 28);
 
-            const filtroMes = document.getElementById('filtroMes').value;
-            const dadosFiltrados = despesas.filter(item => {
-                if (filtroMes === 'todos') return true;
-                return item.data.substring(0, 7) === filtroMes;
+            const despesasFiltradas = despesas.filter(d => {
+                if(periodo === 'todos') return true;
+                return obterChaveMesAno(d.data) === periodo;
             });
 
-            const colunas = ["Data", "Técnico", "Cidade", "Tipo", "Valor"];
-            const linhas = dadosFiltrados.map(item => [
-                formatarData(item.data),
-                item.tecnico,
-                item.cidade,
-                item.tipo === 'Outros' && item.detalheOutros ? `Outros (${item.detalheOutros})` : item.tipo,
-                formatarMoeda(item.valor)
+            const dadosTabela = despesasFiltradas.map(d => [
+                d.data.split('-').reverse().join('/'),
+                d.tecnico,
+                d.cidade,
+                d.tipo,
+                `R$ ${d.valor.toFixed(2).replace('.', ',')}`
             ]);
 
             doc.autoTable({
                 startY: 35,
-                head: [colunas],
-                body: linhas,
-                theme: 'grid',
+                head: [['Data', 'Técnico', 'Cidade', 'Tipo', 'Valor']],
+                body: dadosTabela,
+                theme: 'striped',
                 headStyles: { fillColor: [220, 38, 38] }
             });
 
-            doc.save("controle-despesas-ampere.pdf");
+            doc.save(`despesas_regional_${periodo.replace('/', '-')}.pdf`);
         }
-
-        renderizar();
     </script>
 </body>
 </html>

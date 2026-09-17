@@ -1,478 +1,172 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Despesas Regional Ampére</title>
-    <!-- Tailwind CSS para Estilização -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js para o Gráfico de Despesas -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome para Ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SheetJS e jsPDF para exportações -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkBg: '#0f172a',
-                        cardBg: '#1e293b',
-                        cardBorder: '#334155'
-                    }
-                }
-            }
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Despesas Regional Ampére</title>
+<!-- Tailwind CSS para Estilização -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Chart.js para o Gráfico de Despesas -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- FontAwesome para Ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- SheetJS e jsPDF para exportações -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<script>
+tailwind.config = {darkMode: 'class', theme: {extend: {colors: {darkBg: '#0f172a', cardBg: '#1e293b', cardBorder: '#334155' } } } }
+</script>
 </head>
 <body class="bg-darkBg text-slate-100 min-h-screen font-sans transition-colors duration-200">
-
-    <!-- Container Principal -->
-    <div class="max-w-7xl mx-auto px-4 py-6">
-        
-        <!-- Cabeçalho -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-cardBorder gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="bg-red-600 p-3 rounded-lg text-white shadow-lg">
-                    <i class="fa-solid fa-receipt text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold tracking-tight">CONTROLE DE DESPESAS REGIONAL AMPÉRE</h1>
-                    <p class="text-sm text-slate-400">Gestão de almoços e despesas da equipe técnica</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
-                <button onclick="toggleDarkMode()" class="bg-cardBg border border-cardBorder p-2.5 rounded-lg text-slate-300 hover:text-white transition" title="Alternar Tema">
-                    <i id="themeIcon" class="fa-solid fa-moon"></i>
-                </button>
-                <button onclick="abrirModalDespesa()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg font-medium shadow-lg transition flex items-center space-x-2">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>Registrar Despesa</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Barra de Filtros e Período -->
-        <div class="flex flex-col sm:flex-row justify-between items-center bg-cardBg border border-cardBorder p-4 rounded-xl mb-6 gap-4">
-            <div class="flex items-center space-x-3 w-full sm:w-auto">
-                <i class="fa-regular fa-calendar-days text-red-500 text-lg"></i>
-                <span class="text-sm font-semibold uppercase tracking-wider text-slate-300">Período:</span>
-                <select id="filtroPeriodo" onchange="mudarPeriodo()" class="bg-slate-900 border border-cardBorder text-slate-200 text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500 transition">
-                    <option value="todos">Todos os Meses</option>
-                </select>
-            </div>
-
-            <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
-                <button onclick="exportarPDF()" class="bg-slate-800 hover:bg-slate-700 border border-cardBorder text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center space-x-2">
-                    <i class="fa-solid fa-file-pdf text-red-400"></i>
-                    <span>Exportar PDF</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Cards de Resumo -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Despesa Total</p>
-                <h2 id="cardTotal" class="text-2xl font-bold text-red-500">R$ 0,00</h2>
-            </div>
-            <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Média por Almoço</p>
-                <h2 id="cardMedia" class="text-2xl font-bold text-slate-100">R$ 0,00</h2>
-            </div>
-            <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Danos e Outros</p>
-                <h2 id="cardDanos" class="text-2xl font-bold text-amber-500">R$ 0,00</h2>
-            </div>
-            <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Lançamentos</p>
-                <h2 id="cardLancamentos" class="text-2xl font-bold text-slate-100">0</h2>
-            </div>
-        </div>
-
-        <!-- Gráfico de Despesas por Mês -->
-        <div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm mb-6">
-            <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4"><i class="fa-solid fa-chart-column text-red-500 mr-2"></i>Evolução de Despesas por Mês</h3>
-            <div class="relative h-48 w-full">
-                <canvas id="graficoMeses"></canvas>
-            </div>
-        </div>
-
-        <!-- Tabela de Detalhamento -->
-        <div class="bg-cardBg border border-cardBorder rounded-xl shadow-sm overflow-hidden">
-            <div class="p-5 border-b border-cardBorder flex justify-between items-center">
-                <h3 class="font-semibold text-base">Detalhamento das Despesas</h3>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-cardBorder text-xs text-slate-400 uppercase bg-slate-900/50">
-                            <th class="p-4 font-semibold">Data</th>
-                            <th class="p-4 font-semibold">Técnico</th>
-                            <th class="p-4 font-semibold">Cidade</th>
-                            <th class="p-4 font-semibold">Tipo</th>
-                            <th class="p-4 font-semibold">Valor</th>
-                            <th class="p-4 font-semibold text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaDespesas" class="divide-y divide-cardBorder text-sm">
-                        <!-- Inserido dinamicamente via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Cadastro / Edição -->
-    <div id="modalDespesa" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-cardBg border border-cardBorder w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
-            <div class="flex justify-between items-center p-5 border-b border-cardBorder">
-                <h3 id="modalTitulo" class="font-bold text-lg">Registrar Nova Despesa</h3>
-                <button onclick="fecharModalDespesa()" class="text-slate-400 hover:text-white transition">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-            <form id="formDespesa" onsubmit="salvarDespesa(event)" class="p-5 space-y-4">
-                <input type="hidden" id="despesaId">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Data</label>
-                    <input type="date" id="inputData" required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Técnico</label>
-                    <input type="text" id="inputTecnico" placeholder="Nome do técnico" required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Cidade</label>
-                    <input type="text" id="inputCidade" placeholder="Ex: Ampére, Realeza..." required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Tipo de Despesa</label>
-                    <select id="inputTipo" class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
-                        <option value="Almoço">Almoço</option>
-                        <option value="Danos Residenciais">Danos Residenciais</option>
-                        <option value="Outros">Outros</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Valor (R$)</label>
-                    <input type="number" step="0.01" id="inputValor" placeholder="0,00" required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="fecharModalDespesa()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-sm font-medium transition">Cancelar</button>
-                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition shadow-lg">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Script de Funcionalidades -->
-    <script>
-        // Array Inicial de Dados (incluindo o mês atual atualizado para Agosto/2026 e históricos)
-        let despesas = JSON.parse(localStorage.getItem('despesas_regional')) || [
-            { id: 1, data: '2026-08-04', tecnico: 'Sulivan', cidade: 'Ampére', tipo: 'Almoço', valor: 45.00 },
-            { id: 2, data: '2026-08-05', tecnico: 'Kuan', cidade: 'Realeza', tipo: 'Almoço', valor: 55.00 },
-            { id: 3, data: '2026-08-06', tecnico: 'Rodrigo', cidade: 'Capitão', tipo: 'Almoço', valor: 50.00 },
-            { id: 4, data: '2026-06-25', tecnico: 'Rodrigo', cidade: 'Capitão', tipo: 'Danos Residenciais', valor: 6.60 },
-            { id: 5, data: '2026-06-23', tecnico: 'Kuan', cidade: 'Realeza', tipo: 'Almoço', valor: 60.00 },
-            { id: 6, data: '2026-06-23', tecnico: 'Alessandro', cidade: 'Realeza', tipo: 'Almoço', valor: 60.00 }
-        ];
-
-        let chartInstance = null;
-        const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-
-        // Inicialização do Sistema
-        document.addEventListener('DOMContentLoaded', () => {
-            popularFiltrosPeriodo();
-            renderizarApp();
-        });
-
-        function obterChaveMesAno(dataStr) {
-            const [ano, mes] = dataStr.split('-');
-            return `${mes}/${ano}`;
-        }
-
-        function formatarPeriodoLabel(chaveMesAno) {
-            const [mes, ano] = chaveMesAno.split('/');
-            return `${nomesMeses[parseInt(mes) - 1]} / ${ano}`;
-        }
-
-        function popularFiltrosPeriodo() {
-            const select = document.getElementById('filtroPeriodo');
-            
-            // Descobrir meses disponíveis
-            const mesesSet = new Set();
-            despesas.forEach(d => {
-                if(d.data) mesesSet.add(obterChaveMesAno(d.data));
-            });
-
-            // Adicionar mês atual caso não esteja na lista
-            const agora = new Date();
-            const mesAtualChave = String(agora.getMonth() + 1).padStart(2, '0') + '/' + agora.getFullYear();
-            mesesSet.add(mesAtualChave);
-
-            // Ordenar decrescente
-            const mesesOrdenados = Array.from(mesesSet).sort().reverse();
-
-            let optionsHtml = '<option value="todos">Todos os Meses</option>';
-            mesesOrdenados.forEach(m => {
-                optionsHtml += `<option value="${m}">${formatarPeriodoLabel(m)}</option>`;
-            });
-            select.innerHTML = optionsHtml;
-
-            // Selecionar mês atual por padrão se existir nas opções
-            if(mesesSet.has(mesAtualChave)) {
-                select.value = mesAtualChave;
-            }
-        }
-
-        function renderizarApp() {
-            const periodoSelecionado = document.getElementById('filtroPeriodo').value;
-            
-            // Filtrar dados
-            const despesasFiltradas = despesas.filter(d => {
-                if(periodoSelecionado === 'todos') return true;
-                return obterChaveMesAno(d.data) === periodoSelecionado;
-            });
-
-            // Ordenar por data decrescente
-            despesasFiltradas.sort((a, b) => new Date(b.data) - new Date(a.data));
-
-            // Atualizar Cards
-            let totalGeral = 0;
-            let totalAlmoco = 0;
-            let qtdAlmoco = 0;
-            let totalDanos = 0;
-
-            despesasFiltradas.forEach(d => {
-                totalGeral += d.valor;
-                if(d.tipo === 'Almoço') {
-                    totalAlmoco += d.valor;
-                    qtdAlmoco++;
-                } else {
-                    totalDanos += d.valor;
-                }
-            });
-
-            const mediaAlmoco = qtdAlmoco > 0 ? totalAlmoco / qtdAlmoco : 0;
-
-            document.getElementById('cardTotal').innerText = `R$ ${totalGeral.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('cardMedia').innerText = `R$ ${mediaAlmoco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('cardDanos').innerText = `R$ ${totalDanos.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('cardLancamentos').innerText = despesasFiltradas.length;
-
-            // Renderizar Tabela
-            const tbody = document.getElementById('tabelaDespesas');
-            if(despesasFiltradas.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">Nenhuma despesa encontrada para este período.</td></tr>`;
-            } else {
-                tbody.innerHTML = despesasFiltradas.map(d => {
-                    const dataFormatada = d.data.split('-').reverse().join('/');
-                    const tipoBadge = d.tipo === 'Almoço' ? 'bg-blue-900/40 text-blue-400 border border-blue-800' : 'bg-amber-950/40 text-amber-400 border border-amber-800';
-                    return `
-                        <tr class="hover:bg-slate-800/50 transition">
-                            <td class="p-4 font-medium">${dataFormatada}</td>
-                            <td class="p-4">${d.tecnico}</td>
-                            <td class="p-4">${d.cidade}</td>
-                            <td class="p-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${tipoBadge}">${d.tipo}</span></td>
-                            <td class="p-4 font-semibold text-slate-200">R$ ${d.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                            <td class="p-4 text-center space-x-2">
-                                <button onclick="editarDespesa(${d.id})" class="text-blue-400 hover:text-blue-300 text-xs font-medium px-2 py-1 bg-blue-950/50 rounded transition">Editar</button>
-                                <button onclick="deletarDespesa(${d.id})" class="text-red-400 hover:text-red-300 text-xs font-medium px-2 py-1 bg-red-950/50 rounded transition">Deletar</button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            atualizarGrafico();
-            localStorage.setItem('despesas_regional', JSON.stringify(despesas));
-        }
-
-        function atualizarGrafico() {
-            // Agrupar totais por mês/ano
-            const totaisPorMes = {};
-            despesas.forEach(d => {
-                const chave = obterChaveMesAno(d.data);
-                totaisPorMes[chave] = (totaisPorMes[chave] || 0) + d.valor;
-            });
-
-            // Ordenar cronologicamente
-            const chavesOrdenadas = Object.keys(totaisPorMes).sort((a, b) => {
-                const [mA, aA] = a.split('/');
-                const [mB, aB] = b.split('/');
-                return new Date(`${aA}-${mA}-01`) - new Date(`${aB}-${mB}-01`);
-            });
-
-            const labels = chavesOrdenadas.map(c => formatarPeriodoLabel(c));
-            const dados = chavesOrdenadas.map(c => totaisPorMes[c]);
-
-            const ctx = document.getElementById('graficoMeses').getContext('2d');
-            if(chartInstance) {
-                chartInstance.destroy();
-            }
-
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total Despesas (R$)',
-                        data: dados,
-                        backgroundColor: '#dc2626',
-                        borderRadius: 6,
-                        barThickness: 32
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return ' R$ ' + context.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits: 2});
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8', font: { size: 11 } }
-                        },
-                        y: {
-                            grid: { color: '#334155' },
-                            ticks: { 
-                                color: '#94a3b8', 
-                                font: { size: 11 },
-                                callback: function(value) { return 'R$ ' + value; }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function mudarPeriodo() {
-            renderizarApp();
-        }
-
-        function abrirModalDespesa() {
-            document.getElementById('modalDespesa').classList.remove('hidden');
-            document.getElementById('modalDespesa').classList.add('flex');
-            document.getElementById('modalTitulo').innerText = 'Registrar Nova Despesa';
-            document.getElementById('formDespesa').reset();
-            document.getElementById('despesaId').value = '';
-            
-            // Definir data padrão como hoje
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('inputData').value = hoje;
-        }
-
-        function fecharModalDespesa() {
-            document.getElementById('modalDespesa').classList.remove('flex');
-            document.getElementById('modalDespesa').classList.add('hidden');
-        }
-
-        function salvarDespesa(event) {
-            event.preventDefault();
-            const id = document.getElementById('despesaId').value;
-            const data = document.getElementById('inputData').value;
-            const tecnico = document.getElementById('inputTecnico').value;
-            const cidade = document.getElementById('inputCidade').value;
-            const tipo = document.getElementById('inputTipo').value;
-            const valor = parseFloat(document.getElementById('inputValor').value);
-
-            if(id) {
-                // Editar
-                const index = despesas.findIndex(d => d.id == id);
-                if(index !== -1) {
-                    despesas[index] = { id: parseInt(id), data, tecnico, cidade, tipo, valor };
-                }
-            } else {
-                // Criar
-                const novoId = despesas.length > 0 ? Math.max(...despesas.map(d => d.id)) + 1 : 1;
-                despesas.push({ id: novoId, data, tecnico, cidade, tipo, valor });
-            }
-
-            fecharModalDespesa();
-            popularFiltrosPeriodo();
-            renderizarApp();
-        }
-
-        function editarDespesa(id) {
-            const d = despesas.find(item => item.id === id);
-            if(!d) return;
-
-            abrirModalDespesa();
-            document.getElementById('modalTitulo').innerText = 'Editar Despesa';
-            document.getElementById('despesaId').value = d.id;
-            document.getElementById('inputData').value = d.data;
-            document.getElementById('inputTecnico').value = d.tecnico;
-            document.getElementById('inputCidade').value = d.cidade;
-            document.getElementById('inputTipo').value = d.tipo;
-            document.getElementById('inputValor').value = d.valor;
-        }
-
-        function deletarDespesa(id) {
-            if(confirm('Tem certeza que deseja excluir esta despesa?')) {
-                despesas = despesas.filter(d => d.id !== id);
-                popularFiltrosPeriodo();
-                renderizarApp();
-            }
-        }
-
-        function toggleDarkMode() {
-            const html = document.documentElement;
-            html.classList.toggle('dark');
-            const icon = document.getElementById('themeIcon');
-            if(html.classList.contains('dark')) {
-                icon.className = 'fa-solid fa-moon';
-            } else {
-                icon.className = 'fa-solid fa-sun';
-            }
-        }
-
-        function exportarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            doc.setFontSize(16);
-            doc.text("Controle de Despesas - Regional Ampére", 14, 20);
-            
-            const periodo = document.getElementById('filtroPeriodo').value;
-            doc.setFontSize(11);
-            doc.text(`Período: ${periodo === 'todos' ? 'Todos os Meses' : formatarPeriodoLabel(periodo)}`, 14, 28);
-
-            const despesasFiltradas = despesas.filter(d => {
-                if(periodo === 'todos') return true;
-                return obterChaveMesAno(d.data) === periodo;
-            });
-
-            const dadosTabela = despesasFiltradas.map(d => [
-                d.data.split('-').reverse().join('/'),
-                d.tecnico,
-                d.cidade,
-                d.tipo,
-                `R$ ${d.valor.toFixed(2).replace('.', ',')}`
-            ]);
-
-            doc.autoTable({
-                startY: 35,
-                head: [['Data', 'Técnico', 'Cidade', 'Tipo', 'Valor']],
-                body: dadosTabela,
-                theme: 'striped',
-                headStyles: { fillColor: [220, 38, 38] }
-            });
-
-            doc.save(`despesas_regional_${periodo.replace('/', '-')}.pdf`);
-        }
-    </script>
+<!-- Container Principal -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+<!-- Cabeçalho -->
+<header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-cardBorder gap-4">
+<div class="flex items-center space-x-3">
+<div class="bg-red-600 p-3 rounded-lg text-white shadow-lg">
+<i class="fa-solid fa-receipt text-xl"></i>
+</div>
+<div>
+<h1 class="text-2xl font-bold tracking-tight">CONTROLE DE DESPESAS REGIONAL AMPÉRE</h1>
+<p class="text-sm text-slate-400">Gestão de almoços e despesas da equipe técnica</p>
+</div>
+</div>
+<div class="flex items-center space-x-3 w-full md:w-auto justify-end">
+<button onclick="toggleDarkMode()" class="bg-cardBg border border-cardBorder p-2.5 rounded-lg text-slate-300 hover:text-white transition" title="Alternar Tema">
+<i id="themeIcon" class="fa-solid fa-moon"></i>
+</button>
+<button onclick="abrirModalDespesa()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg font-medium shadow-lg transition flex items-center space-x-2">
+<i class="fa-solid fa-plus"></i>
+<span>Registrar Despesa</span>
+</button>
+</div>
+</header>
+<!-- Barra de Filtros e Período -->
+<div class="flex flex-col sm:flex-row justify-between items-center bg-cardBg border border-cardBorder p-4 rounded-xl mb-6 gap-4">
+<div class="flex items-center space-x-3 w-full sm:w-auto">
+<i class="fa-regular fa-calendar-days text-red-500 text-lg"></i>
+<span class="text-sm font-semibold uppercase tracking-wider text-slate-300">Período:</span>
+<select id="filtroPeriodo" onchange="mudarPeriodo()" class="bg-slate-900 border border-cardBorder text-slate-200 text-sm rounded-lg px-3 py-2 outline-none focus:border-red-500 transition">
+<option value="todos">Todos os Meses</option>
+</select>
+</div>
+<div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
+<button onclick="exportarPDF()" class="bg-slate-800 hover:bg-slate-700 border border-cardBorder text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center space-x-2">
+<i class="fa-solid fa-file-pdf text-red-400"></i>
+<span>Exportar PDF</span>
+</button>
+</div>
+</div>
+<!-- Cards de Resumo -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
+<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Despesa Total</p>
+<h2 id="cardTotal" class="text-2xl font-bold text-red-500">R$ 0,00</h2>
+</div>
+<div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
+<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Média por Almoço</p>
+<h2 id="cardMedia" class="text-2xl font-bold text-slate-100">R$ 0,00</h2>
+</div>
+<div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
+<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Danos e Outros</p>
+<h2 id="cardDanos" class="text-2xl font-bold text-amber-500">R$ 0,00</h2>
+</div>
+<div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm">
+<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Lançamentos</p>
+<h2 id="cardLancamentos" class="text-2xl font-bold text-slate-100">0</h2>
+</div>
+</div>
+<!-- Gráfico de Despesas por Mês -->
+<div class="bg-cardBg border border-cardBorder p-5 rounded-xl shadow-sm mb-6">
+<h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4"><i class="fa-solid fa-chart-column text-red-500 mr-2"></i>Evolução de Despesas por Mês</h3>
+<div class="relative h-48 w-full">
+<canvas id="graficoMeses"></canvas>
+</div>
+</div>
+<!-- Tabela de Detalhamento -->
+<div class="bg-cardBg border border-cardBorder rounded-xl shadow-sm overflow-hidden">
+<div class="p-5 border-b border-cardBorder flex justify-between items-center">
+<h3 class="font-semibold text-base">Detalhamento das Despesas</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-cardBorder text-xs text-slate-400 uppercase bg-slate-900/50">
+<th class="p-4 font-semibold">Data</th>
+<th class="p-4 font-semibold">Técnico</th>
+<th class="p-4 font-semibold">Cidade</th>
+<th class="p-4 font-semibold">Tipo</th>
+<th class="p-4 font-semibold">Valor</th>
+<th class="p-4 font-semibold text-center">Ações</th>
+</tr>
+</thead>
+<tbody id="tabelaDespesas" class="divide-y divide-cardBorder text-sm">
+<!-- Inserido dinamicamente via JS -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Modal de Cadastro / Edição -->
+<div id="modalDespesa" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+<div class="bg-cardBg border border-cardBorder w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+<div class="flex justify-between items-center p-5 border-b border-cardBorder">
+<h3 id="modalTitulo" class="font-bold text-lg">Registrar Nova Despesa</h3>
+<button onclick="fecharModalDespesa()" class="text-slate-400 hover:text-white transition">
+<i class="fa-solid fa-xmark text-lg"></i>
+</button>
+</div>
+<form id="formDespesa" onsubmit="salvarDespesa(event)" class="p-5 space-y-4">
+<input type="hidden" id="despesaId">
+<div>
+<label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Data</label>
+<input type="date" id="inputData" required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
+</div>
+<div>
+<label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Técnico</label>
+<input type="text" id="inputTecnico" placeholder="Nome do técnico" required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
+</div>
+<div>
+<label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Cidade</label>
+<input type="text" id="inputCidade" placeholder="Ex: Ampére, Realeza..." required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
+</div>
+<div>
+<label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Tipo de Despesa</label>
+<select id="inputTipo" class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
+<option value="Almoço">Almoço</option>
+<option value="Café">Café</option>
+<option value="Danos Residenciais">Danos Residenciais</option>
+<option value="Outros">Outros</option>
+</select>
+</div>
+<div>
+<label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Valor (R$)</label>
+<input type="number" step="0.01" id="inputValor" placeholder="0,00" required class="w-full bg-slate-900 border border-cardBorder rounded-lg px-3 py-2 text-slate-200 outline-none focus:border-red-500">
+</div>
+<div class="flex justify-end space-x-3 pt-2">
+<button type="button" onclick="fecharModalDespesa()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-sm font-medium transition">Cancelar</button>
+<button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition shadow-lg">Salvar</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Script de Funcionalidades -->
+<script>
+let despesas = JSON.parse(localStorage.getItem('despesas_regional')) || [{ id: 1, data: '2026-08-04', tecnico: 'Sulivan', cidade: 'Ampére', tipo: 'Almoço', valor: 45.00 }, { id: 2, data: '2026-08-05', tecnico: 'Kuan', cidade: 'Realeza', tipo: 'Almoço', valor: 55.00 }, { id: 3, data: '2026-08-06', tecnico: 'Rodrigo', cidade: 'Capitão', tipo: 'Almoço', valor: 50.00 }, { id: 4, data: '2026-06-25', tecnico: 'Rodrigo', cidade: 'Capitão', tipo: 'Danos Residenciais', valor: 6.60 }, { id: 5, data: '2026-06-23', tecnico: 'Kuan', cidade: 'Realeza', tipo: 'Almoço', valor: 60.00 }, { id: 6, data: '2026-06-23', tecnico: 'Alessandro', cidade: 'Realeza', tipo: 'Almoço', valor: 60.00 } ]; let chartInstance = null; const nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+document.addEventListener('DOMContentLoaded', () => {popularFiltrosPeriodo(); renderizarApp(); });
+function obterChaveMesAno(dataStr) {const [ano, mes] = dataStr.split('-'); return `${mes}/${ano}`; }
+function formatarPeriodoLabel(chaveMesAno) {const [mes, ano] = chaveMesAno.split('/'); return `${nomesMeses[parseInt(mes) - 1]} / ${ano}`; }
+function popularFiltrosPeriodo() {const select = document.getElementById('filtroPeriodo'); const mesesSet = new Set(); despesas.forEach(d => {if(d.data) mesesSet.add(obterChaveMesAno(d.data)); }); const agora = new Date(); const mesAtualChave = String(agora.getMonth() + 1).padStart(2, '0') + '/' + agora.getFullYear(); mesesSet.add(mesAtualChave); const mesesOrdenados = Array.from(mesesSet).sort().reverse(); let optionsHtml = '<option value="todos">Todos os Meses</option>'; mesesOrdenados.forEach(m => {optionsHtml += `<option value="${m}">${formatarPeriodoLabel(m)}</option>`; }); select.innerHTML = optionsHtml; if(mesesSet.has(mesAtualChave)) {select.value = mesAtualChave; } }
+function renderizarApp() {const periodoSelecionado = document.getElementById('filtroPeriodo').value; const despesasFiltradas = despesas.filter(d => {if(periodoSelecionado === 'todos') return true; return obterChaveMesAno(d.data) === periodoSelecionado; }); despesasFiltradas.sort((a, b) => new Date(b.data) - new Date(a.data)); let totalGeral = 0; let totalAlmoco = 0; let qtdAlmoco = 0; let totalDanos = 0; despesasFiltradas.forEach(d => {totalGeral += d.valor; if(d.tipo === 'Almoço') {totalAlmoco += d.valor; qtdAlmoco++; } else {totalDanos += d.valor; } }); const mediaAlmoco = qtdAlmoco > 0 ? totalAlmoco / qtdAlmoco : 0; document.getElementById('cardTotal').innerText = `R$ ${totalGeral.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`; document.getElementById('cardMedia').innerText = `R$ ${mediaAlmoco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`; document.getElementById('cardDanos').innerText = `R$ ${totalDanos.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`; document.getElementById('cardLancamentos').innerText = despesasFiltradas.length; const tbody = document.getElementById('tabelaDespesas'); if(despesasFiltradas.length === 0) {tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">Nenhuma despesa encontrada para este período.</td></tr>`; } else {tbody.innerHTML = despesasFiltradas.map(d => {const dataFormatada = d.data.split('-').reverse().join('/'); const tipoBadge = d.tipo === 'Almoço' ? 'bg-blue-900/40 text-blue-400 border border-blue-800' : 'bg-amber-950/40 text-amber-400 border border-amber-800'; return ` <tr class="hover:bg-slate-800/50 transition"> <td class="p-4 font-medium">${dataFormatada}</td> <td class="p-4">${d.tecnico}</td> <td class="p-4">${d.cidade}</td> <td class="p-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${tipoBadge}">${d.tipo}</span></td> <td class="p-4 font-semibold text-slate-200">R$ ${d.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td> <td class="p-4 text-center space-x-2"> <button onclick="editarDespesa(${d.id})" class="text-blue-400 hover:text-blue-300 text-xs font-medium px-2 py-1 bg-blue-950/50 rounded transition">Editar</button> <button onclick="deletarDespesa(${d.id})" class="text-red-400 hover:text-red-300 text-xs font-medium px-2 py-1 bg-red-950/50 rounded transition">Deletar</button> </td> </tr> `; }).join(''); } atualizarGrafico(); localStorage.setItem('despesas_regional', JSON.stringify(despesas)); }
+function atualizarGrafico() {const totaisPorMes = {}; despesas.forEach(d => {const chave = obterChaveMesAno(d.data); totaisPorMes[chave] = (totaisPorMes[chave] || 0) + d.valor; }); const chavesOrdenadas = Object.keys(totaisPorMes).sort((a, b) => {const [mA, aA] = a.split('/'); const [mB, aB] = b.split('/'); return new Date(`${aA}-${mA}-01`) - new Date(`${aB}-${mB}-01`); }); const labels = chavesOrdenadas.map(c => formatarPeriodoLabel(c)); const dados = chavesOrdenadas.map(c => totaisPorMes[c]); const ctx = document.getElementById('graficoMeses').getContext('2d'); if(chartInstance) {chartInstance.destroy(); } chartInstance = new Chart(ctx, {type: 'bar', data: {labels: labels, datasets: [{label: 'Total Despesas (R$)', data: dados, backgroundColor: '#dc2626', borderRadius: 6, barThickness: 32 }] }, options: {responsive: true, maintainAspectRatio: false, plugins: {legend: { display: false }, tooltip: {callbacks: {label: function(context) {return ' R$ ' + context.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits: 2}); } } } }, scales: {x: {grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } }, y: {grid: { color: '#334155' }, ticks: {color: '#94a3b8', font: { size: 11 }, callback: function(value) { return 'R$ ' + value; } } } } } }); }
+function mudarPeriodo() {renderizarApp(); }
+function abrirModalDespesa() {document.getElementById('modalDespesa').classList.remove('hidden'); document.getElementById('modalDespesa').classList.add('flex'); document.getElementById('modalTitulo').innerText = 'Registrar Nova Despesa'; document.getElementById('formDespesa').reset(); document.getElementById('despesaId').value = ''; const hoje = new Date().toISOString().split('T')[0]; document.getElementById('inputData').value = hoje; }
+function fecharModalDespesa() {document.getElementById('modalDespesa').classList.remove('flex'); document.getElementById('modalDespesa').classList.add('hidden'); }
+function salvarDespesa(event) {event.preventDefault(); const id = document.getElementById('despesaId').value; const data = document.getElementById('inputData').value; const tecnico = document.getElementById('inputTecnico').value; const cidade = document.getElementById('inputCidade').value; const tipo = document.getElementById('inputTipo').value; const valor = parseFloat(document.getElementById('inputValor').value); if(id) {const index = despesas.findIndex(d => d.id == id); if(index !== -1) {despesas[index] = { id: parseInt(id), data, tecnico, cidade, tipo, valor }; } } else {const novoId = despesas.length > 0 ? Math.max(...despesas.map(d => d.id)) + 1 : 1; despesas.push({ id: novoId, data, tecnico, cidade, tipo, valor }); } fecharModalDespesa(); popularFiltrosPeriodo(); renderizarApp(); }
+function editarDespesa(id) {const d = despesas.find(item => item.id === id); if(!d) return; abrirModalDespesa(); document.getElementById('modalTitulo').innerText = 'Editar Despesa'; document.getElementById('despesaId').value = d.id; document.getElementById('inputData').value = d.data; document.getElementById('inputTecnico').value = d.tecnico; document.getElementById('inputCidade').value = d.cidade; document.getElementById('inputTipo').value = d.tipo; document.getElementById('inputValor').value = d.valor; }
+function deletarDespesa(id) {if(confirm('Tem certeza que deseja excluir esta despesa?')) {despesas = despesas.filter(d => d.id !== id); popularFiltrosPeriodo(); renderizarApp(); } }
+function toggleDarkMode() {const html = document.documentElement; html.classList.toggle('dark'); const icon = document.getElementById('themeIcon'); if(html.classList.contains('dark')) {icon.className = 'fa-solid fa-moon'; } else {icon.className = 'fa-solid fa-sun'; } }
+function exportarPDF() {const { jsPDF } = window.jspdf; const doc = new jsPDF(); doc.setFontSize(16); doc.text("Controle de Despesas - Regional Ampére", 14, 20); const periodo = document.getElementById('filtroPeriodo').value; doc.setFontSize(11); doc.text(`Período: ${periodo === 'todos' ? 'Todos os Meses' : formatarPeriodoLabel(periodo)}`, 14, 28); const despesasFiltradas = despesas.filter(d => {if(periodo === 'todos') return true; return obterChaveMesAno(d.data) === periodo; }); const dadosTabela = despesasFiltradas.map(d => [d.data.split('-').reverse().join('/'), d.tecnico, d.cidade, d.tipo, `R$ ${d.valor.toFixed(2).replace('.', ',')}` ]); doc.autoTable({startY: 35, head: [['Data', 'Técnico', 'Cidade', 'Tipo', 'Valor']], body: dadosTabela, theme: 'striped', headStyles: { fillColor: [220, 38, 38] } }); doc.save(`despesas_regional_${periodo.replace('/', '-')}.pdf`); }
+</script>
 </body>
 </html>
